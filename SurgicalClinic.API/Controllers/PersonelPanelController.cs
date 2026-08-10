@@ -1,0 +1,80 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SurgicalClinic.BusinessLogicLayer.DTOs;
+using SurgicalClinic.BusinessLogicLayer.Services.Abstract;
+using SurgicalClinic.Entities.Concrete;
+using SurgicalClinic.Entities.Enums;
+using System.Security.Claims;
+
+namespace SurgicalClinic.API.Controllers
+{
+    [ApiController]
+    [Route("api/[controller")]
+    [Authorize(Roles = "Admin,Personel")]
+    public class PersonelPanelController : ControllerBase
+    {
+
+        private readonly IPersonelPanelService _personelService;
+
+        public PersonelPanelController(IPersonelPanelService personelService)
+        {
+            _personelService = personelService;
+        }
+
+        [HttpGet("randevular/search")]
+        public async Task<IActionResult> GetRandevular([FromQuery] string? query, [FromQuery] RandevuDrum? durum, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
+        {
+            var result = await _personelService.GetRandevularAsync(query, durum, pageIndex, pageSize);
+            return Ok(result);
+        }
+        [HttpPut("randevular/{id}/durum")]
+        public async Task<IActionResult> RandevuDurumGuncelle(int id, [FromQuery] RandevuDrum drum)
+        {
+            var result = await _personelService.RandevuDurumGuncelleAsync(id, drum);
+            if (!result)
+                return NotFound(new { message = "Randevu bulunamadı" });
+            return Ok(new { message = " Randevu durumu güncellendi" });
+        }
+        [HttpGet("hastalar")]
+        public async Task<IActionResult> GetHastalar()
+        {
+            var result = await _personelService.GetHastalarAsync();
+            return Ok(result);
+        }
+        [HttpGet("hastalar/{id}")]
+        public async Task<IActionResult> GetHastaById(int id)
+        {
+            var result = await _personelService.GetHastaByIdAsync(id);
+            if (result == null)
+                return NotFound(new { message = "Hasta bulunamadı" });
+            return Ok(result);
+        }
+        [HttpPost("hastalar")]
+        public async Task<IActionResult> HastaKaydet([FromBody] HastaDto dto)
+        {
+            var result = await _personelService.HastaEkleVeGuncelleAsync(dto);
+            return Ok(result);
+        }
+        [HttpPost("doktorlar/profil")]
+        public async Task<IActionResult> DoktorProfilOlustur([FromBody] DoktorProfilOlusturDto dto)
+        {
+            var kullaniciIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(kullaniciIdClaim) || !int.TryParse(kullaniciIdClaim, out int kullaniciId))
+                return Unauthorized();
+            var result = await _personelService.DoktorProfilOlusturAsync(kullaniciId, dto);
+            if (!result)
+                return BadRequest(new { message = "Doktor profil uluşturulamadı veya bu kullanıcıya ait zaten kullanıcı mevcut" });
+            return Ok(new { messagw = "Doktor profliniz başarıyla oluşturuldu" });
+
+        }
+
+        [HttpGet("takvim")]
+        public async Task<IActionResult> GetTakvim([FromQuery] int ay, [FromQuery] int yil)
+        {
+            var result = await _personelService.GetTakvimEventAsync(ay, yil);
+            return Ok(result);
+        }
+
+
+    }
+}

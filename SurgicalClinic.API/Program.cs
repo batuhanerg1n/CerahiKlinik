@@ -21,6 +21,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<INameMaskingService, NameMaskingService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPublicService, PublicService>();
+builder.Services.AddScoped<IPersonelPanelService, PersonelPanelService>();
 
 var screteKey = builder.Configuration["JwtSettings:Secret"]?? "SuperSecretKeyForSurgicalClinicApi2026!";
 var key= Encoding.ASCII.GetBytes(screteKey);
