@@ -17,7 +17,7 @@ namespace SurgicalClinic.Entities.Concrete
         public string Aciklama { get; set; }=string.Empty;
 
         public Kullanici? Kullanici { get; set; }
-        public ICollection<DoktorBrans> DontorBranslar { get; set; } = new List<DoktorBrans>();
+        public ICollection<DoktorBrans> DoktorBranslar { get; set; } = new List<DoktorBrans>();
         public ICollection<Randevu> Randevular { get; set; } = new List<Randevu>();
     }
 }

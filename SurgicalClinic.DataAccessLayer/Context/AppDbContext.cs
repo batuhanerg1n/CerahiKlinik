@@ -29,7 +29,7 @@ namespace SurgicalClinic.DataAccessLayer.Context
 
             modelBuilder.Entity<DoktorBrans>()
             .HasOne(db => db.Doktor)
-            .WithMany(d => d.DontorBranslar)
+            .WithMany(d => d.DoktorBranslar)
             .HasForeignKey(db => db.DoktorId);
 
             modelBuilder.Entity<DoktorBrans>()

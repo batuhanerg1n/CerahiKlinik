@@ -22,7 +22,7 @@ namespace SurgicalClinic.Entities.Concrete
 
         public DateTime Tarih { get; set; }
         public TimeSpan Saat { get; set; }
-        public RandevuDrum Drum { get; set; } = RandevuDrum.Beklemede;
+        public RandevuDrum Durum { get; set; } = RandevuDrum.Beklemede;
         public RandevuKaynak Kaynak { get; set; } = RandevuKaynak.Online;
 
         public string? HastaNotu { get; set; }
