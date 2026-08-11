@@ -27,7 +27,7 @@ namespace SurgicalClinic.API.Controllers
             var result = await _publicService.GetIslemlerAsync();
             return Ok(result);
         }
-        [HttpGet("online-randevu")]
+        [HttpPost("online-randevu")]
         public async Task<IActionResult> OnlineRandevuOlustur([FromBody] OnlineRandevuOlusturDto dto)
         {
             var (success, message) = await _publicService.OnlineRandevuOlusturAsync(dto);

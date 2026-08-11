@@ -9,7 +9,7 @@ using System.Security.Claims;
 namespace SurgicalClinic.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller")]
+    [Route("api/[controller]")]
     [Authorize(Roles = "Admin,Personel")]
     public class PersonelPanelController : ControllerBase
     {

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SurgicalClinic.BusinessLogicLayer.DTOs;
 using SurgicalClinic.BusinessLogicLayer.Services.Abstract;
+using SurgicalClinic.DataAccessLayer.Abstract;
 using SurgicalClinic.DataAccessLayer.Concrete;
 using SurgicalClinic.Entities.Concrete;
 using System;
@@ -17,10 +18,10 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
 {
     public class AuthService : IAuthService
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
 
-        public AuthService(UnitOfWork unitOfWork, IConfiguration configuration)
+        public AuthService(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
