@@ -23,7 +23,7 @@ namespace SurgicalClinic.API.Controllers
             {
                 return Unauthorized(new { message = "E-Posta veya şifre hatalı!" });
             }
-            return Ok(request);
+            return Ok(result);
         }
 
     }

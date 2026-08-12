@@ -35,5 +35,12 @@ namespace SurgicalClinic.API.Controllers
                 return BadRequest(new { message });
             return Ok(new { message });
         }
+
+        [HttpGet("dolu-saatler")]
+        public async Task<IActionResult> GetDoluSaatler([FromQuery] int doktorId, [FromQuery] DateTime tarih)
+        {
+            var saatler = await _publicService.GetDoluSaatlerAsync(doktorId, tarih);
+            return Ok(saatler);
+        }
     }
 }

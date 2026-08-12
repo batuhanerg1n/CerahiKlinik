@@ -45,6 +45,20 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             });
         }
 
+        public async Task<IEnumerable<TimeSpan>> GetDoluSaatlerAsync(int doktorId, DateTime tarih)
+        {
+            var randevuRepo = _unitOfWork.GetRepository<Randevu>();
+            
+            var doluSaatler= await randevuRepo.GetWhere( r=>
+            r.DoktorId == doktorId &&
+            r.Tarih.Date == tarih.Date &&
+            r.Durum !=RandevuDrum.Iptal)
+            .Select(r => r.Saat)
+            .ToListAsync();
+            return doluSaatler;
+
+        }
+
         public async Task<IEnumerable<IslemDto>> GetIslemlerAsync()
         {
             var islemRepo = _unitOfWork.GetRepository<Islem>();
@@ -61,6 +75,12 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
 
         public async Task<(bool Success, string Message)> OnlineRandevuOlusturAsync(OnlineRandevuOlusturDto dto)
         {
+            var randevuZamani = dto.Tarih.Date.Add(dto.Saat);
+            if (randevuZamani < DateTime.Now)
+            {
+                return (false, "Geçmiş bir tarih veya saate randevu oluşturulamaz.");
+            }
+
             var randevuRepo = _unitOfWork.GetRepository<Randevu>();
             var hastaRepo = _unitOfWork.GetRepository<Hasta>();
 
@@ -102,7 +122,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 Kaynak = RandevuKaynak.Online,
                 OlusturmaTarihi = DateTime.UtcNow
             };
-            await _unitOfWork.SaveChangeAsync();
+            await randevuRepo.AddAsync(yeniRandevu);
 
             try
             {
