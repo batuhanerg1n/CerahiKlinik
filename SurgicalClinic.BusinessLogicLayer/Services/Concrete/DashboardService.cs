@@ -44,7 +44,8 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                     DoktorAd = g.Key.Ad,
                     DoktorSoyad = g.Key.Soyad,
                     DoktorUnvan = g.Key.Unvan,
-                    TamamlananMuayeneSayisi = g.Count()
+                    TamamlananMuayeneSayisi = g.Count(),
+                    ToplamGelir = g.Sum(r => r.Islem.Fiyat)
                 }).ToList();
 
             var islemGelirleri = aylikRandevular

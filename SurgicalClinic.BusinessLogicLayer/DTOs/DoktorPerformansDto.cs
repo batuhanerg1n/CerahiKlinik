@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace SurgicalClinic.BusinessLogicLayer.DTOs
 {
-    public  class DoktorPerformansDto
+    public class DoktorPerformansDto
     {
-        public string DoktorAd { get; set; } =string.Empty;
+        public string DoktorAd { get; set; } = string.Empty;
         public string DoktorSoyad { get; set; } = string.Empty;
         public string DoktorUnvan { get; set; } = string.Empty;
         public int TamamlananMuayeneSayisi { get; set; }
+        public decimal ToplamGelir { get; set; }
     }
-
-
 }
+        

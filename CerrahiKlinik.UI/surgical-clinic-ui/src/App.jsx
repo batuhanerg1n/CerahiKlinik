@@ -1,38 +1,34 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import PublicHome from './pages/PublicHome';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// AuthProvider'ı import etmeyi unutmuyoruz! Yolu kendi dosyana göre ayarla:
+import { AuthProvider } from './context/AuthContext'; 
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
-};
+import ProtectedRoute from './components/ProtectedRoute'; 
+import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
+import Randevular from './pages/Randevular';
+import Login from './pages/Login';
+import PublicHome from './pages/PublicHome'; 
 
 function AppRoutes() {
   return (
-    <Routes>
-      <Route path="/" element={<PublicHome />} />
-      <Route path="/login" element={<Login />} />
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
-  );
-}
-
-export default function App() {
-  return (
     <AuthProvider>
       <Router>
-        <AppRoutes />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<PublicHome />} />
+
+          <Route element={<ProtectedRoute />}>
+            
+            <Route element={<Layout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/randevular" element={<Randevular />} />
+            </Route>
+
+          </Route>
+        </Routes>
       </Router>
     </AuthProvider>
   );
 }
+
+export default AppRoutes;

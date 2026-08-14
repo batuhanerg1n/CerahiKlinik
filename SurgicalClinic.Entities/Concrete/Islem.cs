@@ -12,7 +12,7 @@ namespace SurgicalClinic.Entities.Concrete
         public int Id { get; set; }
         public string Ad { get; set; } = string.Empty;
         public string Aciklama { get; set; }= string.Empty;
-        public Decimal Fiyat { get; set; }
+        public decimal Fiyat { get; set; }
         public ICollection<Randevu> Randevular { get; set; } = new List<Randevu>();
     }
 }
