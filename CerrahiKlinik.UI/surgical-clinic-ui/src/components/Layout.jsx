@@ -39,7 +39,7 @@ export default function Layout() {
               <Stethoscope className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="font-bold text-slate-800 text-lg leading-none">SurgicalClinic</h1>
+              <h1 className="font-bold text-slate-800 text-lg leading-none">Klinik</h1>
               <p className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mt-1">Yönetim Paneli</p>
             </div>
           </div>

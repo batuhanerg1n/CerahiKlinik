@@ -59,7 +59,7 @@ export default function DoktorLayout() {
               {user?.ad?.charAt(0) || 'D'}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-bold text-slate-800 truncate">Dr. {user?.ad} {user?.soyad}</p>
+              <p className="text-sm font-bold text-slate-800 truncate">{user?.Unvan} {user?.ad} {user?.soyad}</p>
               <p className="text-xs text-slate-400 capitalize truncate">{user?.rol || 'Doktor'}</p>
             </div>
           </div>

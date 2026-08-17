@@ -49,7 +49,8 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 Tarih = r.Tarih,
                 Saat = r.Saat,
                 Durum = r.Durum,
-                HastaNotu = r.HastaNotu
+                HastaNotu = r.HastaNotu,
+                DoktorNotu =r.DoktorNotu
             });
         }
 
@@ -135,6 +136,28 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 return false;
 
             randevu.Durum = RandevuDrum.Tamamlandi;
+            randevu.DoktorNotu = doktorNotu;       
+            randevu.OnayTarihi = DateTime.Now;     
+            randevuRepo.Update(randevu);
+            await _unitOfWork.SaveChangeAsync();
+            return true;
+        }
+
+        public async Task<bool> RandevuIptalAsync(int kullaniciId, int randevuId)
+        {
+            var doktorId = await GetDoktorIdByKullaniciIdAsync(kullaniciId);
+            if (!doktorId.HasValue) return false;
+
+            var randevuRepo = _unitOfWork.GetRepository<Randevu>();
+            var randevu = await randevuRepo.GetByIdAsync(randevuId);
+
+            if (randevu == null || randevu.DoktorId != doktorId.Value)
+                return false;
+
+            if( randevu.Durum == RandevuDrum.Tamamlandi || randevu.Durum == RandevuDrum.Iptal)
+                return false;
+
+            randevu.Durum = RandevuDrum.Iptal;
             randevuRepo.Update(randevu);
             await _unitOfWork.SaveChangeAsync();
             return true;

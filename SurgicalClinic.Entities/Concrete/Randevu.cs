@@ -26,6 +26,7 @@ namespace SurgicalClinic.Entities.Concrete
         public RandevuKaynak Kaynak { get; set; } = RandevuKaynak.Online;
 
         public string? HastaNotu { get; set; }
+        public string? DoktorNotu { get; set; }
         public DateTime OlusturmaTarihi { get; set; }=DateTime.Now;
         public DateTime? OnayTarihi { get; set; }
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { 
   Calendar as CalendarIcon, Clock, User, 
-  FileText, CheckCircle2, ChevronLeft, ChevronRight, History 
+  FileText, CheckCircle2, ChevronLeft, ChevronRight, History , XCircle
 } from 'lucide-react';
 
 export default function DoktorTakvim() {
@@ -73,18 +73,13 @@ export default function DoktorTakvim() {
       }
 
       await axiosInstance.put(
-        `/DoktorPanel/randevu/${tamamlaModal.randevuId}/tamamla`, 
-        JSON.stringify(doktorNotu), 
-        { 
-          headers: { 
-            'Content-Type': 'application/json' 
-          } 
-        }
+        `/DoktorPanel/randevu/${tamamlaModal.randevuId}/tamamla`,
+        { doktorNotu: doktorNotu }   
       );
-      
+
       setTamamlaModal({ isOpen: false, randevuId: null });
       setDoktorNotu('');
-      fetchGunlukRandevular(); 
+      fetchGunlukRandevular();
       fetchTakvim();
       alert("Muayene başarıyla tamamlandı!");
     } catch (err) {
@@ -92,6 +87,19 @@ export default function DoktorTakvim() {
       alert('İşlem başarısız oldu. Lütfen tekrar deneyin.');
     }
   };
+
+  const handleRandevuIptal = async (randevuId) => {
+  if (!window.confirm('Bu randevuyu iptal etmek istediğinize emin misiniz?')) return;
+  try {
+    await axiosInstance.put(`/DoktorPanel/randevu/${randevuId}/iptal`);
+    fetchGunlukRandevular();
+    fetchTakvim();
+    alert('Randevu iptal edildi.');
+  } catch (err) {
+    console.error('Randevu iptal edilemedi:', err);
+    alert('İşlem başarısız oldu.');
+  }
+};
 
   const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
   const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
@@ -127,7 +135,7 @@ export default function DoktorTakvim() {
             </h2>
             <div className="flex gap-2">
               <button onClick={prevMonth} className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50"><ChevronLeft className="w-4 h-4"/></button>
-              <button onClick={goToday} className="px-3 py-1.5 text-xs font-bold border border-slate-200 rounded-lg hover:bg-slate-50">Bugün</button>
+              <button onClick={goToday} className="px-3 py-1.5 text-xs font-bold border border-slate-200 rounded-lg hover:bg-slate-50">{selectedDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</button>
               <button onClick={nextMonth} className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50"><ChevronRight className="w-4 h-4"/></button>
             </div>
           </div>
@@ -181,8 +189,7 @@ export default function DoktorTakvim() {
             </div>
           ) : (
             gunlukRandevular.map(r => {
-              // Konsolda gördüğümüz 'randevuId' anahtarını öncelikli olarak yakalıyoruz
-              const currentRandevuId = r.randevuId || r.id || r.Id || r.ID;
+              const currentRandevuId = r.randevuId;
 
               return (
                 <div key={currentRandevuId} className={`bg-white rounded-xl border-l-4 shadow-sm p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all
@@ -294,6 +301,14 @@ export default function DoktorTakvim() {
                 >
                   Kaydet ve Tamamla
                 </button>
+                {r.durum !== 3 && r.durum !== 4 && (
+                <button 
+                  onClick={() => handleRandevuIptal(currentRandevuId)}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 rounded-lg text-sm font-semibold transition"
+                >
+                <XCircle className="w-4 h-4" /> İptal
+  </button>
+)}
               </div>
             </div>
           </div>

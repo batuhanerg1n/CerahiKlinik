@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SurgicalClinic.BusinessLogicLayer.DTOs;
 using SurgicalClinic.BusinessLogicLayer.Services.Abstract;
 using SurgicalClinic.Entities.Enums;
 using System.Security.Claims;
@@ -43,14 +44,27 @@ namespace SurgicalClinic.API.Controllers
         }
 
         [HttpPut("randevu/{id}/tamamla")]
-        public async Task<IActionResult> RandevuTamamla(int id, [FromBody] string? doktorNotu)
+        public async Task<IActionResult> RandevuTamamla(int id, [FromBody] RandevuTamamlaDto dto)
         {
             var userId = GetCurrentUserId();
-            var success = await _doktorPanelService.RandevuTamamlaAsync( userId, id, doktorNotu);
+            var success = await _doktorPanelService.RandevuTamamlaAsync(userId, id, dto.DoktorNotu);
             if (!success)
-                return BadRequest(new { message = "RandevuTamamlanamadı veya yetkiniz yok" });
-            return Ok(new { message ="Muayene/Randevu başarıyla tamamlandı."});
+                return BadRequest(new { message = "Randevu tamamlanamadı veya yetkiniz yok" });
+            return Ok(new { message = "Muayene/Randevu başarıyla tamamlandı." });
         }
+
+        [HttpPut("randevu/{hastaId}/iptal")]
+
+        public async Task<IActionResult> RandevuIptal(int id)
+        {
+            var userId = GetCurrentUserId();
+            var success = await _doktorPanelService.RandevuIptalAsync(userId, id);
+            if (!success)
+                return BadRequest(new { message = "Randevu iptal edilemedi veya yetkiniz yok" });
+            return Ok(new { message = "Randevu iptal edildi." });
+        }
+
+
         [HttpGet("hasta-gecmisi/{hastaId}")]
 
         public async Task<IActionResult> GetHastaGecmisi(int hastaId)

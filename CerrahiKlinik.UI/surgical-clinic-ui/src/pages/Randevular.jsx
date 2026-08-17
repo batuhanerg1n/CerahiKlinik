@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { 
   Search, Eye, MoreVertical, Calendar as CalendarIcon, Clock, 
-  Phone, Globe, ChevronLeft, ChevronRight, CheckCircle2 
+  Phone, Globe, ChevronLeft, ChevronRight, CheckCircle2, XCircle
 } from 'lucide-react';
 import RandevuModal from './RandevuModal'; 
 
@@ -48,6 +48,27 @@ export default function Randevular() {
       setLoading(false);
     }
   };
+
+  const handleDurumGuncelle = async (randevuId, yeniDurum) => {
+  try {
+    await axiosInstance.put(
+      `/PersonelPanel/randevular/${randevuId}/durum`,
+      null,
+      { params: { drum: yeniDurum } }   
+    );
+    fetchRandevular();  
+  } catch (err) {
+    console.error('Durum güncellenemedi:', err);
+    alert('İşlem başarısız oldu.');
+  }
+};
+
+const handleOnayla = (randevuId) => handleDurumGuncelle(randevuId, 2);
+
+const handleIptal = (randevuId) => {
+  if (!window.confirm('Bu randevuyu iptal etmek istediğinize emin misiniz?')) return;
+  handleDurumGuncelle(randevuId, 4);
+};
 
   const filteredRandevular = randevular.filter(r => {
     const aramaMetni = searchQuery.toLowerCase();
@@ -157,17 +178,37 @@ export default function Randevular() {
             </div>
 
             <div className="flex items-center gap-2">
-              <button onClick={() => setDetayRandevu(r)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Detayları Gör">
-                <Eye className="w-5 h-5" />
-              </button>
-              <button 
-                onClick={() => { setEditRandevuId(r.id); setIsEditModalOpen(true); }} 
-                className="p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition" 
-                title="Düzenle"
-              >
-                <MoreVertical className="w-5 h-5" />
-              </button>
-            </div>
+  {r.durum === 1 && (
+    <button 
+      onClick={() => handleOnayla(r.id)} 
+      className="p-2 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition" 
+      title="Onayla"
+    >
+      <CheckCircle2 className="w-5 h-5" />
+    </button>
+  )}
+
+  {(r.durum === 1 || r.durum === 2) && (
+    <button 
+      onClick={() => handleIptal(r.id)} 
+      className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition" 
+      title="İptal Et"
+    >
+      <XCircle className="w-5 h-5" />
+    </button>
+  )}
+
+  <button onClick={() => setDetayRandevu(r)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Detayları Gör">
+    <Eye className="w-5 h-5" />
+  </button>
+  <button 
+    onClick={() => { setEditRandevuId(r.id); setIsEditModalOpen(true); }} 
+    className="p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition" 
+    title="Düzenle"
+  >
+    <MoreVertical className="w-5 h-5" />
+  </button>
+</div>
           </div>
         ))}
 

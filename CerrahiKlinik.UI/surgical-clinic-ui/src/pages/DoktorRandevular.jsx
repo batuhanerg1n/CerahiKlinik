@@ -37,7 +37,7 @@ export default function DoktorRandevular() {
         ) : (
           <div className="space-y-3">
             {randevular.map(r => (
-              <div key={r.id} className={`p-4 rounded-xl border-l-4 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition bg-slate-50/50 hover:bg-slate-50
+              <div key={r.randevuId} className={`p-4 rounded-xl border-l-4 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition bg-slate-50/50 hover:bg-slate-50
                 ${r.durum === 3 ? 'border-l-blue-500' : r.durum === 4 ? 'border-l-rose-500' : 'border-l-emerald-500'}
               `}>
                 <div>
