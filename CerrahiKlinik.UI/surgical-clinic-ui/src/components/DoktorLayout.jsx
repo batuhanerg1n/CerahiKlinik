@@ -1,46 +1,35 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { 
-  LayoutDashboard, 
-  CalendarDays, 
-  Users, 
-  Stethoscope, 
-  Settings, 
-  LogOut, 
-  HomeIcon
-} from 'lucide-react';
+import { CalendarDays, ListTodo, Users, LogOut, Stethoscope } from 'lucide-react';
 
-export default function Layout() {
+export default function DoktorLayout() {
   const { user, logout } = useAuth(); 
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/login', { replace: true });
   };
 
   const menuItems = [
-    { name: 'GenelPanel', path: '/Dashboard', icon: <HomeIcon className="w-5 h-5" /> },
-    { name: 'Randevular', path: '/randevular', icon: <CalendarDays className="w-5 h-5" /> },
-    { name: 'Hastalar', path: '/hastalar', icon: <Users className="w-5 h-5" /> },
-    { name: 'Doktorlar', path: '/doktorlar', icon: <Stethoscope className="w-5 h-5" /> },
-    { name: 'Ayarlar', path: '/ayarlar', icon: <Settings className="w-5 h-5" /> },
+    { name: 'Takvimim', path: '/doktor/takvim', icon: <CalendarDays className="w-5 h-5" /> },
+    { name: 'Randevularım', path: '/doktor/randevular', icon: <ListTodo className="w-5 h-5" /> },
+    { name: 'Hastalarım', path: '/doktor/hastalar', icon: <Users className="w-5 h-5" /> }
   ];
 
-  
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden font-sans">
       
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between hidden md:flex z-20">
         <div>
           <div className="h-20 flex items-center gap-3 px-6 border-b border-slate-100">
-            <div className="p-2 bg-blue-100 text-blue-600 rounded-xl">
+            <div className="p-2 bg-emerald-100 text-emerald-600 rounded-xl">
               <Stethoscope className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="font-bold text-slate-800 text-lg leading-none">SurgicalClinic</h1>
-              <p className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mt-1">Yönetim Paneli</p>
+              <h1 className="font-bold text-slate-800 text-lg leading-none">Klinik</h1>
+              <p className="text-[10px] text-emerald-600 font-bold tracking-wider uppercase mt-1">Doktor Paneli</p>
             </div>
           </div>
 
@@ -52,7 +41,7 @@ export default function Layout() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-sm ${
                     isActive 
-                      ? 'bg-blue-50 text-blue-700 font-bold' 
+                      ? 'bg-emerald-50 text-emerald-700 font-bold' 
                       : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
                   }`
                 }
@@ -66,12 +55,12 @@ export default function Layout() {
 
         <div className="p-4 border-t border-slate-100">
           <div className="flex items-center gap-3 px-4 py-3 mb-2">
-            <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
-              {user?.ad?.charAt(0) || 'A'}
+            <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+              {user?.ad?.charAt(0) || 'D'}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-bold text-slate-800 truncate">{user?.ad || 'Admin'} {user?.soyad}</p>
-              <p className="text-xs text-slate-400 capitalize truncate">{user?.rol || 'Yönetici'}</p>
+              <p className="text-sm font-bold text-slate-800 truncate">Dr. {user?.ad} {user?.soyad}</p>
+              <p className="text-xs text-slate-400 capitalize truncate">{user?.rol || 'Doktor'}</p>
             </div>
           </div>
           <button

@@ -8,7 +8,7 @@ namespace SurgicalClinic.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles ="Personel, Admin")]
+    [Authorize(Roles ="Doktor, 4")]
     public class DoktorPanelController : Controller
     {
         private readonly IDoktorPanelService _doktorPanelService;

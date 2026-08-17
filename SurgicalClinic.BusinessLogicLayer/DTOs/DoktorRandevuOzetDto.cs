@@ -10,6 +10,7 @@ namespace SurgicalClinic.BusinessLogicLayer.DTOs
     public class DoktorRandevuOzetDto
     {
         public int RandevuId { get; set; }
+        public int HastaId { get; set; }
         public string HastaAd { get; set; } = string.Empty;
         public string HastaSoyad { get; set; } = string.Empty;
         public string HastaTelefon { get; set; } = string.Empty;

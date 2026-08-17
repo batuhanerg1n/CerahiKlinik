@@ -10,6 +10,7 @@ namespace SurgicalClinic.Entities.Enums
     {
         Admin=1,
         Personel=2,
-        Ziyaretci=3
+        Ziyaretci=3,
+        Doktor=4
     }
 }
