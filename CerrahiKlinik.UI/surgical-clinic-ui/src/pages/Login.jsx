@@ -13,7 +13,6 @@ export default function Login() {
   const { login } = useAuth(); 
   const navigate = useNavigate();
 
-  // Şifreli JWT Token'ın içindeki gizli verileri çözen fonskiyon
   const decodeJWT = (token) => {
     try {
       const base64Url = token.split('.')[1];
@@ -39,13 +38,11 @@ export default function Login() {
 
       if (gelenToken && typeof gelenToken === 'string') {
         
-        // 1. TOKEN'I ÇÖZ
         const decodedData = decodeJWT(gelenToken);
         console.log("ÇÖZÜLMÜŞ TOKEN VERİSİ:", decodedData);
 
-        // 2. İŞTE ÇÖZÜM: Gelen 'Doktor' kelimesini yakala ve 4 rakamına çevir!
         const hamRol = decodedData.role || decodedData.Rol || decodedData.rol;
-        let userRole = 3; // Varsayılan (Ziyaretçi)
+        let userRole = 3; 
 
         if (String(hamRol).toLowerCase() === 'doktor' || Number(hamRol) === 4) {
           userRole = 4;
@@ -55,14 +52,12 @@ export default function Login() {
           userRole = 2;
         }
 
-        // 3. Ekranda güzel görünmesi için mailden isim çıkaralım (ahmet@... -> Ahmet)
         let displayName = 'Doktor';
         if (decodedData.email) {
           const isimKismi = decodedData.email.split('@')[0];
           displayName = isimKismi.charAt(0).toUpperCase() + isimKismi.slice(1);
         }
 
-        // 4. SİSTEME TEMİZ KAYIT AT (Rol artık kesinlikle bir rakam)
         const temizUser = {
           ad: displayName,
           rol: userRole 
@@ -70,7 +65,6 @@ export default function Login() {
 
         login(gelenToken, temizUser);
 
-        // 5. TRAFİK POLİSİ (Yönlendirme)
         if (userRole === 4) {
           navigate('/doktor/takvim', { replace: true });
         } else {

@@ -127,7 +127,6 @@ export default function DoktorTakvim() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Takvim Kutusu */}
         <div className="lg:col-span-1 bg-white rounded-xl border border-slate-200 shadow-sm p-6 h-fit">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-bold text-slate-800 capitalize">
@@ -172,7 +171,6 @@ export default function DoktorTakvim() {
           </div>
         </div>
 
-        {/* Günlük Randevular Listesi */}
         <div className="lg:col-span-2 space-y-4">
           <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
             <CalendarIcon className="w-5 h-5 text-emerald-500"/>
@@ -230,6 +228,15 @@ export default function DoktorTakvim() {
                         <CheckCircle2 className="w-4 h-4" /> Tamamla
                       </button>
                     )}
+
+                    {r.durum !== 3 && r.durum !== 4 && (
+                      <button 
+                        onClick={() => handleRandevuIptal(currentRandevuId)}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 rounded-lg text-sm font-semibold transition"
+                      >
+                        <XCircle className="w-4 h-4" /> İptal
+                      </button>
+                    )}
                   </div>
                 </div>
               );
@@ -238,7 +245,6 @@ export default function DoktorTakvim() {
         </div>
       </div>
 
-      {/* Hasta Geçmişi Modal */}
       {gecmisModal.isOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[80vh]">
@@ -270,7 +276,6 @@ export default function DoktorTakvim() {
         </div>
       )}
 
-      {/* Muayeneyi Tamamla Modal */}
       {tamamlaModal.isOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
@@ -301,14 +306,6 @@ export default function DoktorTakvim() {
                 >
                   Kaydet ve Tamamla
                 </button>
-                {r.durum !== 3 && r.durum !== 4 && (
-                <button 
-                  onClick={() => handleRandevuIptal(currentRandevuId)}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 rounded-lg text-sm font-semibold transition"
-                >
-                <XCircle className="w-4 h-4" /> İptal
-  </button>
-)}
               </div>
             </div>
           </div>
