@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { 
   Search, Eye, MoreVertical, Calendar as CalendarIcon, Clock, 
-  Phone, Globe, ChevronLeft, ChevronRight, CheckCircle2, XCircle
+  Phone, Globe, ChevronLeft, ChevronRight, CheckCircle2, AlertTriangle
 } from 'lucide-react';
 import RandevuModal from './RandevuModal'; 
 
@@ -22,6 +22,9 @@ export default function Randevular() {
   const [detayRandevu, setDetayRandevu] = useState(null);
   const [editRandevuId, setEditRandevuId] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const [aksiyonRandevu, setAksiyonRandevu] = useState(null);
+  const [iptalOnayId, setIptalOnayId] = useState(null);
 
   useEffect(() => {
     fetchRandevular();
@@ -50,25 +53,34 @@ export default function Randevular() {
   };
 
   const handleDurumGuncelle = async (randevuId, yeniDurum) => {
-  try {
-    await axiosInstance.put(
-      `/PersonelPanel/randevular/${randevuId}/durum`,
-      null,
-      { params: { drum: yeniDurum } }   
-    );
-    fetchRandevular();  
-  } catch (err) {
-    console.error('Durum güncellenemedi:', err);
-    alert('İşlem başarısız oldu.');
-  }
-};
+    try {
+      await axiosInstance.put(
+        `/PersonelPanel/randevular/${randevuId}/durum`,
+        null,
+        { params: { drum: yeniDurum } }
+      );
+      setAksiyonRandevu(null);   // aksiyon modalını kapat
+      fetchRandevular();
+    } catch (err) {
+      console.error('Durum güncellenemedi:', err);
+      alert('İşlem başarısız oldu.');
+    }
+  };
 
-const handleOnayla = (randevuId) => handleDurumGuncelle(randevuId, 2);
+  const handleOnayla = (randevuId) => handleDurumGuncelle(randevuId, 2);
+  const handleBeklemeyeAl = (randevuId) => handleDurumGuncelle(randevuId, 1);
 
-const handleIptal = (randevuId) => {
-  if (!window.confirm('Bu randevuyu iptal etmek istediğinize emin misiniz?')) return;
-  handleDurumGuncelle(randevuId, 4);
-};
+  // İptal butonuna basınca: önce aksiyon modalını kapat, onay modalını aç
+  const handleIptal = (randevuId) => {
+    setAksiyonRandevu(null);
+    setIptalOnayId(randevuId);
+  };
+
+  // Onay modalında "Evet, İptal Et" denince gerçek iptal
+  const handleIptalOnayla = () => {
+    if (iptalOnayId) handleDurumGuncelle(iptalOnayId, 4);
+    setIptalOnayId(null);
+  };
 
   const filteredRandevular = randevular.filter(r => {
     const aramaMetni = searchQuery.toLowerCase();
@@ -178,37 +190,17 @@ const handleIptal = (randevuId) => {
             </div>
 
             <div className="flex items-center gap-2">
-  {r.durum === 1 && (
-    <button 
-      onClick={() => handleOnayla(r.id)} 
-      className="p-2 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition" 
-      title="Onayla"
-    >
-      <CheckCircle2 className="w-5 h-5" />
-    </button>
-  )}
-
-  {(r.durum === 1 || r.durum === 2) && (
-    <button 
-      onClick={() => handleIptal(r.id)} 
-      className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition" 
-      title="İptal Et"
-    >
-      <XCircle className="w-5 h-5" />
-    </button>
-  )}
-
-  <button onClick={() => setDetayRandevu(r)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Detayları Gör">
-    <Eye className="w-5 h-5" />
-  </button>
-  <button 
-    onClick={() => { setEditRandevuId(r.id); setIsEditModalOpen(true); }} 
-    className="p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition" 
-    title="Düzenle"
-  >
-    <MoreVertical className="w-5 h-5" />
-  </button>
-</div>
+              <button onClick={() => setDetayRandevu(r)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Detayları Gör">
+                <Eye className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={() => setAksiyonRandevu(r)} 
+                className="p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition" 
+                title="İşlemler"
+              >
+                <MoreVertical className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         ))}
 
@@ -322,6 +314,95 @@ const handleIptal = (randevuId) => {
           </div>
         </div>
       </div>
+
+      {/* İptal Onay Modalı */}
+      {iptalOnayId && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setIptalOnayId(null)}>
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 text-center">
+              <div className="w-14 h-14 rounded-full bg-rose-100 flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-7 h-7 text-rose-600" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800 mb-2">Randevuyu İptal Et</h3>
+              <p className="text-sm text-slate-500 mb-6">
+                Bu randevuyu iptal etmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIptalOnayId(null)}
+                  className="flex-1 py-2.5 rounded-lg border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition"
+                >
+                  Vazgeç
+                </button>
+                <button
+                  onClick={handleIptalOnayla}
+                  className="flex-1 py-2.5 rounded-lg bg-rose-600 text-white font-bold hover:bg-rose-700 shadow-sm transition"
+                >
+                  Evet, İptal Et
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Randevu Yönetimi (Aksiyon) Modalı */}
+      {aksiyonRandevu && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setAksiyonRandevu(null)}>
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+            <div className="p-5 border-b border-slate-100 flex justify-between items-center">
+              <h3 className="font-bold text-slate-800 text-lg">Randevu Yönetimi</h3>
+              <button onClick={() => setAksiyonRandevu(null)} className="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+            </div>
+
+            <div className="p-5">
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Hasta Bilgisi</p>
+              <p className="font-bold text-slate-800">{aksiyonRandevu.hastaAd} {aksiyonRandevu.hastaSoyad}</p>
+              <p className="text-sm text-slate-500 mb-5">{aksiyonRandevu.islemAd} — {aksiyonRandevu.doktorUnvan} {aksiyonRandevu.doktorAd} {aksiyonRandevu.doktorSoyad}</p>
+
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">İşlem Seçin</p>
+              <div className="space-y-2">
+                {/* Onayla: sadece Beklemede (1) ise */}
+                {aksiyonRandevu.durum === 1 && (
+                  <button
+                    onClick={() => handleOnayla(aksiyonRandevu.id)}
+                    className="w-full text-left px-4 py-3 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 font-semibold hover:bg-emerald-100 transition"
+                  >
+                    Randevuyu Onayla
+                  </button>
+                )}
+
+                {/* Beklemeye Al: Onaylı (2) ise geri çekmek için */}
+                {aksiyonRandevu.durum === 2 && (
+                  <button
+                    onClick={() => handleBeklemeyeAl(aksiyonRandevu.id)}
+                    className="w-full text-left px-4 py-3 rounded-xl border border-amber-200 bg-amber-50 text-amber-700 font-semibold hover:bg-amber-100 transition"
+                  >
+                    Beklemeye Al
+                  </button>
+                )}
+
+                {/* İptal: Beklemede (1) veya Onaylı (2) ise */}
+                {(aksiyonRandevu.durum === 1 || aksiyonRandevu.durum === 2) && (
+                  <button
+                    onClick={() => handleIptal(aksiyonRandevu.id)}
+                    className="w-full text-left px-4 py-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 font-semibold hover:bg-rose-100 transition"
+                  >
+                    Randevuyu İptal Et
+                  </button>
+                )}
+
+                {/* Tamamlanmış veya İptal olmuş için aksiyon yok */}
+                {(aksiyonRandevu.durum === 3 || aksiyonRandevu.durum === 4) && (
+                  <p className="text-sm text-slate-400 text-center py-4">
+                    Bu randevu {aksiyonRandevu.durum === 3 ? 'tamamlanmış' : 'iptal edilmiş'}, işlem yapılamaz.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {detayRandevu && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">

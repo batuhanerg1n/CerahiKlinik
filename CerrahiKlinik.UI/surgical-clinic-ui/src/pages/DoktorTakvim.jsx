@@ -2,22 +2,21 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { 
   Calendar as CalendarIcon, Clock, User, 
-  FileText, CheckCircle2, ChevronLeft, ChevronRight, History , XCircle
+  FileText, CheckCircle2, ChevronLeft, ChevronRight, History , XCircle, AlertTriangle
 } from 'lucide-react';
 
 export default function DoktorTakvim() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  
   const [takvimRandevulari, setTakvimRandevulari] = useState([]);
   const [gunlukRandevular, setGunlukRandevular] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const [tamamlaModal, setTamamlaModal] = useState({ isOpen: false, randevuId: null });
   const [doktorNotu, setDoktorNotu] = useState('');
   
   const [gecmisModal, setGecmisModal] = useState({ isOpen: false, hastaId: null, veriler: [] });
   const [gecmisLoading, setGecmisLoading] = useState(false);
+  const [iptalOnayId, setIptalOnayId] = useState(null);
 
   useEffect(() => {
     fetchTakvim();
@@ -88,19 +87,22 @@ export default function DoktorTakvim() {
     }
   };
 
-  const handleRandevuIptal = async (randevuId) => {
-  if (!window.confirm('Bu randevuyu iptal etmek istediğinize emin misiniz?')) return;
+ const handleRandevuIptal = (randevuId) => {
+  setIptalOnayId(randevuId);
+};
+
+const handleIptalOnayla = async () => {
+  const randevuId = iptalOnayId;
+  setIptalOnayId(null);
   try {
     await axiosInstance.put(`/DoktorPanel/randevu/${randevuId}/iptal`);
     fetchGunlukRandevular();
     fetchTakvim();
-    alert('Randevu iptal edildi.');
   } catch (err) {
-    console.error('Randevu iptal edilemedi:', err);
-    alert('İşlem başarısız oldu.');
+    console.error('Randevu iptal edilmedi:', err);
+    alert('İşlem başarısız oldu');
   }
 };
-
   const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
   const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
   
@@ -311,7 +313,37 @@ export default function DoktorTakvim() {
           </div>
         </div>
       )}
-
+      {iptalOnayId && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setIptalOnayId(null)}>
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 text-center">
+              <div className="w-14 h-14 rounded-full bg-rose-100 flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-7 h-7 text-rose-600" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800 mb-2">Randevuyu İptal Et</h3>
+              <p className="text-sm text-slate-500 mb-6">
+                Bu randevuyu iptal etmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIptalOnayId(null)}
+                  className="flex-1 py-2.5 rounded-lg border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition"
+                >
+                  Vazgeç
+                </button>
+                <button
+                  onClick={handleIptalOnayla}
+                  className="flex-1 py-2.5 rounded-lg bg-rose-600 text-white font-bold hover:bg-rose-700 shadow-sm transition"
+                >
+                  Evet, İptal Et
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
     </div>
+    
   );
 }

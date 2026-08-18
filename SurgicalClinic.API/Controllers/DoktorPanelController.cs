@@ -53,8 +53,7 @@ namespace SurgicalClinic.API.Controllers
             return Ok(new { message = "Muayene/Randevu başarıyla tamamlandı." });
         }
 
-        [HttpPut("randevu/{hastaId}/iptal")]
-
+        [HttpPut("randevu/{id}/iptal")]
         public async Task<IActionResult> RandevuIptal(int id)
         {
             var userId = GetCurrentUserId();
