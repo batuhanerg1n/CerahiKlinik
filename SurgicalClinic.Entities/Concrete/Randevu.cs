@@ -19,6 +19,8 @@ namespace SurgicalClinic.Entities.Concrete
 
         public int IslemId { get; set; }
         public Islem Islem { get; set; } = null!;
+        public int? IslemSecenekId { get; set; }
+        public IslemSecenek? IslemSecenek { get; set; }
 
         public DateTime Tarih { get; set; }
         public TimeSpan Saat { get; set; }

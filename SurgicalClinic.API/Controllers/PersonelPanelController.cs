@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SurgicalClinic.BusinessLogicLayer.DTOs;
 using SurgicalClinic.BusinessLogicLayer.Services.Abstract;
+using SurgicalClinic.BusinessLogicLayer.Services.Concrete;
 using SurgicalClinic.Entities.Concrete;
 using SurgicalClinic.Entities.Enums;
 using System.Security.Claims;
@@ -75,6 +76,53 @@ namespace SurgicalClinic.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("islemler")]
+        public async Task<IActionResult> GetTumIslemler()
+        {
+            var result = await _personelService.GetTumIslemlerAsync();
+            return Ok(result);
+        }
+
+        [HttpPost("islemler")]
+        public async Task<IActionResult> IslemEkle([FromBody] IslemOlusturDto dto)
+        {
+            var result = await _personelService.IslemEkleAsync(dto);
+            return Ok(result);
+        }
+
+        [HttpDelete("islemler/{id}")]
+        public async Task<IActionResult> IslemSil(int id)
+        {
+            var success = await _personelService.IslemSilAsync(id);
+            if (!success)
+                return BadRequest(new { message = "İşlem silinemedi." });
+            return Ok(new { message = "İşlem silindi." });
+        }
+
+        [HttpGet("doktorlar")]
+        public async Task<IActionResult> GetTumDoktorlar()
+        {
+            var result = await _personelService.GetTumDoktorlarAsync();
+            return Ok(result);
+        }
+
+        [HttpPost("doktorlar")]
+        public async Task<IActionResult> DoktorOlustur([FromBody] DoktorOlusturDto dto)
+        {
+            var (success, message) = await _personelService.DoktorOlusturAsync(dto);
+            if (!success)
+                return BadRequest(new { message });
+            return Ok(new { message });
+        }
+
+        [HttpDelete("doktorlar/{id}")]
+        public async Task<IActionResult> DoktorSil(int id)
+        {
+            var success = await _personelService.DoktorSilAsync(id);
+            if (!success)
+                return BadRequest(new { message = "Doktor silinemedi." });
+            return Ok(new { message = "Doktor silindi." });
+        }
 
     }
 }

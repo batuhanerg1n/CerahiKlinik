@@ -21,6 +21,7 @@ export default function PublicHome() {
     hastaTelefon: '',
     doktorId: '',
     islemId: '',
+    islemSecenekId: '',
     tarih: '',
     saat: '',
     hastaNotu: ''
@@ -82,8 +83,20 @@ export default function PublicHome() {
   }, [formData.doktorId, formData.tarih]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === 'islemId') {
+      setFormData({ ...formData, islemId: value, islemSecenekId: '' });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
+  const seciliIslem = islemler.find(i => i.id === parseInt(formData.islemId));
+  const seciliSecenek = seciliIslem?.secenekler?.find(s => s.id === parseInt(formData.islemSecenekId));
+  const gosterilecekFiyat = seciliIslem
+    ? (seciliIslem.fiyatTipi === 2 ? (seciliSecenek?.fiyat ?? null) : seciliIslem.fiyat)
+    : null;
+  const formatMoney = (amount) =>
+    new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(amount || 0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -101,8 +114,9 @@ export default function PublicHome() {
         ...formData,
         doktorId: parseInt(formData.doktorId),
         islemId: parseInt(formData.islemId),
+        islemSecenekId: formData.islemSecenekId ? parseInt(formData.islemSecenekId) : null,   // 👈 EKLE
         tarih: `${formData.tarih}T00:00:00.000Z`,
-        saat: `${formData.saat}:00` 
+        saat: `${formData.saat}:00`
       };
 
       const response = await axiosInstance.post('/Public/online-randevu', payload);
@@ -116,6 +130,7 @@ export default function PublicHome() {
         hastaTelefon: '',
         doktorId: '',
         islemId: '',
+        islemSeceneklerId:'',
         tarih: '',
         saat: '',
         hastaNotu: ''
@@ -268,10 +283,33 @@ export default function PublicHome() {
                   <option value="">-- İşlem Seçiniz --</option>
                   {islemler.map((i) => (
                     <option key={i.id} value={i.id}>
-                      {i.ad} ({i.ucret} TL)
+                      {i.ad} {i.fiyatTipi === 2 ? '(Seçenekli)' : `(${formatMoney(i.fiyat)})`}
                     </option>
                   ))}
                 </select>
+                {seciliIslem?.fiyatTipi === 2 && (
+                  <select
+                    name="islemSecenekId"
+                    required
+                    value={formData.islemSecenekId}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 mt-3 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  >
+                    <option value="">-- Seçenek Belirleyiniz --</option>
+                    {seciliIslem.secenekler.map(s => (
+                      <option key={s.id} value={s.id}>
+                        {s.secenekAd} - {formatMoney(s.fiyat)}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+                {gosterilecekFiyat !== null && (
+                  <div className="mt-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-center justify-between">
+                    <span className="text-sm font-semibold text-blue-700">Tahmini Ücret</span>
+                    <span className="text-lg font-bold text-blue-800">{formatMoney(gosterilecekFiyat)}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

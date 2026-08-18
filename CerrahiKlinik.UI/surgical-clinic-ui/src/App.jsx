@@ -14,6 +14,7 @@ import PublicHome from './pages/PublicHome';
 
 import DoktorTakvim from './pages/DoktorTakvim';
 import DoktorRandevular from './pages/DoktorRandevular';
+import Ayarlar from './pages/Ayarlar';
 
 function MainRoutes() {
   const { user } = useAuth(); 
@@ -34,6 +35,7 @@ function MainRoutes() {
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/randevular" element={<Randevular />} />
+            <Route path="/ayarlar" element={<Ayarlar/>}/>
           </Route>
 
           <Route path="/doktor" element={<DoktorLayout />}>

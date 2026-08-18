@@ -42,5 +42,11 @@ namespace SurgicalClinic.API.Controllers
             var saatler = await _publicService.GetDoluSaatlerAsync(doktorId, tarih);
             return Ok(saatler);
         }
+        [HttpGet("branslar")]
+        public async Task<IActionResult> GetBranslar()
+        {
+            var result = await _publicService.GetBranslarAsync();
+            return Ok(result);
+        }
     }
 }

@@ -19,6 +19,7 @@ namespace SurgicalClinic.DataAccessLayer.Context
         public DbSet<Hasta> Hastalar { get; set; }
         public DbSet<Islem> Islemler { get; set; }
         public DbSet<Randevu> Randevular { get; set; }
+        public DbSet<IslemSecenek> IslemSecenekler { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,6 +69,22 @@ namespace SurgicalClinic.DataAccessLayer.Context
             modelBuilder.Entity<Islem>()
             .Property(i => i.Fiyat)
             .HasPrecision(18, 2);
+
+            modelBuilder.Entity<IslemSecenek>()
+                .Property(s => s.Fiyat)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<IslemSecenek>()
+                .HasOne(s => s.Islem)
+                .WithMany(i =>i.Secenekler)
+                .HasForeignKey(s => s.IslemId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Randevu>()
+                .HasOne( r=>r.IslemSecenek)
+                .WithMany()
+                .HasForeignKey( r => r.IslemSecenekId)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
 

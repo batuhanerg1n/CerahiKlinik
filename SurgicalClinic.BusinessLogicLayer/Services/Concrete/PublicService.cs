@@ -22,6 +22,13 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<IEnumerable<BransDto>> GetBranslarAsync()
+        {
+           var bransRepo = _unitOfWork.GetRepository<Brans>();
+           var branslar = await bransRepo.GetAllAsync();
+            return branslar.Select(b => new BransDto { Id = b.Id, Ad = b.Ad });
+        }
+
         public async Task<IEnumerable<DoktorDto>> GetDoktorlarAsync(int? bransId = null)
         {
             var DoktorRepo = _unitOfWork.GetRepository<Doktor>();
@@ -62,14 +69,23 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
         public async Task<IEnumerable<IslemDto>> GetIslemlerAsync()
         {
             var islemRepo = _unitOfWork.GetRepository<Islem>();
-            var  islemler= await islemRepo.GetAllAsync();
+            var islemler = await islemRepo.GetWhere(i => true)
+                .Include(i => i.Secenekler)
+                .ToListAsync();
 
             return islemler.Select(i => new IslemDto
             {
                 Id = i.Id,
                 Ad = i.Ad,
                 Aciklama = i.Aciklama,
-                Fiyat = i.Fiyat
+                FiyatTipi = (int)i.FiyatTipi,
+                Fiyat = i.Fiyat,
+                Secenekler = i.Secenekler.Select(s => new IslemSecenekDto
+                {
+                    Id = s.Id,
+                    SecenekAd = s.SecenekAd,
+                    Fiyat = s.Fiyat
+                }).ToList()
             });
         }
 
@@ -115,6 +131,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 HastaId = hasta.Id,
                 DoktorId = dto.DoktorId,
                 IslemId = dto.IslemId,
+                IslemSecenekId= dto.IslemSecenekId,
                 Tarih = dto.Tarih.Date,
                 Saat = dto.Saat,
                 HastaNotu = dto.HastaNotu,

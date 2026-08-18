@@ -13,6 +13,7 @@ namespace SurgicalClinic.BusinessLogicLayer.DTOs
         public string HastaTelefon { get; set; } = string.Empty;
         public int DoktorId { get; set; }
         public int IslemId { get; set; }
+        public int? IslemSecenekId { get; set; }
         public DateTime Tarih { get; set; }
         public TimeSpan Saat { get; set; }
         public string? HastaNotu { get; set; }

@@ -59,7 +59,7 @@ export default function Randevular() {
         null,
         { params: { drum: yeniDurum } }
       );
-      setAksiyonRandevu(null);   // aksiyon modalını kapat
+      setAksiyonRandevu(null);   
       fetchRandevular();
     } catch (err) {
       console.error('Durum güncellenemedi:', err);
@@ -70,13 +70,11 @@ export default function Randevular() {
   const handleOnayla = (randevuId) => handleDurumGuncelle(randevuId, 2);
   const handleBeklemeyeAl = (randevuId) => handleDurumGuncelle(randevuId, 1);
 
-  // İptal butonuna basınca: önce aksiyon modalını kapat, onay modalını aç
   const handleIptal = (randevuId) => {
     setAksiyonRandevu(null);
     setIptalOnayId(randevuId);
   };
 
-  // Onay modalında "Evet, İptal Et" denince gerçek iptal
   const handleIptalOnayla = () => {
     if (iptalOnayId) handleDurumGuncelle(iptalOnayId, 4);
     setIptalOnayId(null);
@@ -315,7 +313,6 @@ export default function Randevular() {
         </div>
       </div>
 
-      {/* İptal Onay Modalı */}
       {iptalOnayId && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setIptalOnayId(null)}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
@@ -346,7 +343,6 @@ export default function Randevular() {
         </div>
       )}
 
-      {/* Randevu Yönetimi (Aksiyon) Modalı */}
       {aksiyonRandevu && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setAksiyonRandevu(null)}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
@@ -362,7 +358,6 @@ export default function Randevular() {
 
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">İşlem Seçin</p>
               <div className="space-y-2">
-                {/* Onayla: sadece Beklemede (1) ise */}
                 {aksiyonRandevu.durum === 1 && (
                   <button
                     onClick={() => handleOnayla(aksiyonRandevu.id)}
@@ -372,7 +367,6 @@ export default function Randevular() {
                   </button>
                 )}
 
-                {/* Beklemeye Al: Onaylı (2) ise geri çekmek için */}
                 {aksiyonRandevu.durum === 2 && (
                   <button
                     onClick={() => handleBeklemeyeAl(aksiyonRandevu.id)}
@@ -382,7 +376,6 @@ export default function Randevular() {
                   </button>
                 )}
 
-                {/* İptal: Beklemede (1) veya Onaylı (2) ise */}
                 {(aksiyonRandevu.durum === 1 || aksiyonRandevu.durum === 2) && (
                   <button
                     onClick={() => handleIptal(aksiyonRandevu.id)}
@@ -392,7 +385,6 @@ export default function Randevular() {
                   </button>
                 )}
 
-                {/* Tamamlanmış veya İptal olmuş için aksiyon yok */}
                 {(aksiyonRandevu.durum === 3 || aksiyonRandevu.durum === 4) && (
                   <p className="text-sm text-slate-400 text-center py-4">
                     Bu randevu {aksiyonRandevu.durum === 3 ? 'tamamlanmış' : 'iptal edilmiş'}, işlem yapılamaz.

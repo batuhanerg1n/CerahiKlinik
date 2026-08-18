@@ -22,6 +22,47 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<(bool Success, string Message)> DoktorOlusturAsync(DoktorOlusturDto dto)
+        {
+            var kullaniciRepo = _unitOfWork.GetRepository<Kullanici>();
+            var doktorRepo = _unitOfWork.GetRepository<Doktor>();
+
+            // Email zaten kayıtlı mı?
+            var emailVar = await kullaniciRepo.GetWhere(k => k.Email == dto.Email).AnyAsync();
+            if (emailVar)
+                return (false, "Bu email adresi zaten kayıtlı.");
+
+            // 1. Kullanıcı hesabı (Doktor rolü)
+            var kullanici = new Kullanici
+            {
+                Ad = dto.Ad,
+                Soyad = dto.Soyad,
+                Email = dto.Email,
+                passwordHash = dto.Sifre,   // mevcut sistem plain text tutuyor
+                Rol = Rol.Doktor
+            };
+            await kullaniciRepo.AddAsync(kullanici);
+            await _unitOfWork.SaveChangeAsync();
+
+            // 2. Doktor profili
+            var doktor = new Doktor
+            {
+                KullaniciId = kullanici.Id,
+                Ad = dto.Ad,
+                Soyad = dto.Soyad,
+                Unvan = dto.Unvan,
+                Aciklama = dto.Aciklama
+            };
+            foreach (var bransId in dto.BransIds)
+            {
+                doktor.DoktorBranslar.Add(new DoktorBrans { BransId = bransId });
+            }
+            await doktorRepo.AddAsync(doktor);
+            await _unitOfWork.SaveChangeAsync();
+
+            return (true, "Doktor başarıyla oluşturuldu.");
+        }
+
         public async Task<bool> DoktorProfilOlusturAsync(int kullaniciId, DoktorProfilOlusturDto dto)
         {
             var kullaniciRepo = _unitOfWork.GetRepository<Kullanici>();
@@ -52,6 +93,17 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             await _unitOfWork.SaveChangeAsync();
             return true;
 
+        }
+
+        public async Task<bool> DoktorSilAsync(int doktorId)
+        {
+            var doktorRepo = _unitOfWork.GetRepository<Doktor>();
+            var doktor = await doktorRepo.GetByIdAsync(doktorId);
+            if (doktor == null) return false;
+
+            doktorRepo.Remove(doktor);
+            await _unitOfWork.SaveChangeAsync();
+            return true;
         }
 
         public async Task<HastaDto?> GetHastaByIdAsync(int id)
@@ -180,7 +232,49 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                     _ => "#6c757d"
                 }
             });
-            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<DoktorListeDto>> GetTumDoktorlarAsync()
+        {
+            var doktorRepo = _unitOfWork.GetRepository<Doktor>();
+            var doktorlar = await doktorRepo.GetWhere(d => true)
+                .Include(d => d.Kullanici)
+                .Include(d => d.DoktorBranslar)
+                    .ThenInclude(db => db.Brans)
+                .ToListAsync();
+
+            return doktorlar.Select(d => new DoktorListeDto
+            {
+                Id = d.Id,
+                Ad = d.Ad,
+                Soyad = d.Soyad,
+                Unvan = d.Unvan,
+                Email = d.Kullanici?.Email ?? "",
+                Branslar = d.DoktorBranslar.Select(db => db.Brans.Ad).ToList()
+            });
+        }
+
+        public async Task<IEnumerable<IslemDto>> GetTumIslemlerAsync()
+        {
+            var islemRepo = _unitOfWork.GetRepository<IslemDto>();
+            var islemler = await islemRepo.GetWhere(i => true)
+                .Include( i =>i.Secenekler)
+                .ToListAsync();
+            return islemler.Select(i => new IslemDto
+            {
+                Id = i.Id,
+                Ad = i.Ad,
+                Aciklama = i.Aciklama,
+                FiyatTipi = (int)i.FiyatTipi,
+                Fiyat = i.Fiyat,
+                Secenekler = i.Secenekler.Select(s => new IslemSecenekDto
+                {
+                    Id = s.Id,
+                    SecenekAd = s.SecenekAd,
+                    Fiyat = s.Fiyat
+                }).ToList()
+
+            });
         }
 
         public async Task<HastaDto> HastaEkleVeGuncelleAsync(HastaDto dto)
@@ -218,7 +312,55 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
 
             return dto;
         }
-        
+
+        public async Task<IslemDto> IslemEkleAsync(IslemOlusturDto dto)
+        {
+            var islemRepo = _unitOfWork.GetRepository<Islem>();
+
+            var yeniIslem = new Islem
+            {
+                Ad = dto.Ad,
+                Aciklama = dto.Aciklama,
+                FiyatTipi = (FiyatTipi)dto.FiyatTipi,
+                Fiyat = dto.FiyatTipi == 1 ? dto.Fiyat : 0,
+                Secenekler = dto.FiyatTipi == 2
+                    ? dto.Secenekler.Select(s => new IslemSecenek
+                    {
+                        SecenekAd = s.SecenekAd,
+                        Fiyat = s.Fiyat
+                    }).ToList()
+                    : new List<IslemSecenek>()
+            };
+
+            await islemRepo.AddAsync(yeniIslem);
+            await _unitOfWork.SaveChangeAsync();
+
+            return new IslemDto
+            {
+                Id = yeniIslem.Id,
+                Ad = yeniIslem.Ad,
+                Aciklama = yeniIslem.Aciklama,
+                FiyatTipi = (int)yeniIslem.FiyatTipi,
+                Fiyat = yeniIslem.Fiyat,
+                Secenekler = yeniIslem.Secenekler.Select(s => new IslemSecenekDto
+                {
+                    Id = s.Id,
+                    SecenekAd = s.SecenekAd,
+                    Fiyat = s.Fiyat
+                }).ToList()
+            };
+        }
+
+        public async Task<bool> IslemSilAsync(int islemId)
+        {
+            var islemRepo = _unitOfWork.GetRepository<Islem>();
+            var islem = await islemRepo.GetByIdAsync(islemId);
+            if (islem == null) return false;
+
+            islemRepo.Remove(islem);   
+            await _unitOfWork.SaveChangeAsync();
+            return true;
+        }
 
         public async Task<bool> RandevuDurumGuncelleAsync(int randevuId, RandevuDrum yeniDurum)
         {
