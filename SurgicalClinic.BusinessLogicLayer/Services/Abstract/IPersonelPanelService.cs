@@ -27,7 +27,12 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Abstract
         Task<IslemDto> IslemEkleAsync(IslemOlusturDto dto);
         Task<bool> IslemSilAsync(int islemId);
         Task<(bool Success, string Message)> DoktorOlusturAsync(DoktorOlusturDto dto);
+        
         Task<IEnumerable<DoktorListeDto>> GetTumDoktorlarAsync();
         Task<bool> DoktorSilAsync(int doktorId);
+        Task<BransDto> BransEkleAsync(string ad);
+        Task<bool> BransSilAsync(int BransId);
+        Task<(bool Success, string Message)> IslemGuncelleAsync(int islemId, IslemGuncelleDto dto);
+        Task<(bool Success, string Message)> DoktorGuncelleAsync(int doktorId, DoktorGuncelleDto dto);
     }
 }

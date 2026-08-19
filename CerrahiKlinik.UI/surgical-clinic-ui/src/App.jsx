@@ -16,6 +16,8 @@ import DoktorTakvim from './pages/DoktorTakvim';
 import DoktorRandevular from './pages/DoktorRandevular';
 import Ayarlar from './pages/Ayarlar';
 
+import Doktorlar from './pages/Doktorlar';
+
 function MainRoutes() {
   const { user } = useAuth(); 
   const role = Number(user?.rol);
@@ -36,6 +38,7 @@ function MainRoutes() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/randevular" element={<Randevular />} />
             <Route path="/ayarlar" element={<Ayarlar/>}/>
+            <Route path="/doktorlar" element={<Doktorlar/>} />
           </Route>
 
           <Route path="/doktor" element={<DoktorLayout />}>

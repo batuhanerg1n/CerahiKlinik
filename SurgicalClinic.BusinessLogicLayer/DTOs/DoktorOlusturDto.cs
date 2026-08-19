@@ -23,8 +23,18 @@ namespace SurgicalClinic.BusinessLogicLayer.DTOs
         public string Ad { get; set; } =string.Empty ;
         public string Soyad { get; set; } =string .Empty ;
         public string Unvan { get; set; } = string.Empty;
+        public string Aciklama { get; set; } = string .Empty ;
         public string Email { get; set; }= string.Empty;
         public List<string> Branslar { get; set; }= new();
+        public List<int> BransIds { get; set; } = new();
 
+    }
+    public class DoktorGuncelleDto
+    {
+        public string Ad { get; set; }=string.Empty ;
+        public string Soyad { get; set; }=string .Empty ;
+        public string Unvan { get; set; } = string.Empty;
+        public string Aciklama { get; set; } = string.Empty;
+        public List<int> BransIds { get; set; } = new();
     }
 }

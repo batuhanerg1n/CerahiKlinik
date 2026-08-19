@@ -124,5 +124,41 @@ namespace SurgicalClinic.API.Controllers
             return Ok(new { message = "Doktor silindi." });
         }
 
+        [HttpPost("branslar")]
+        public async Task<IActionResult> BransEkle([FromBody] BransEkleDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Ad))
+                return BadRequest(new { message = "Branş adı boş olamaz." });
+
+            var result = await _personelService.BransEkleAsync(dto.Ad.Trim());
+            return Ok(result);
+        }
+
+        [HttpDelete("branslar/{id}")]
+        public async Task<IActionResult> BransSil(int id)
+        {
+            var success = await _personelService.BransSilAsync(id);
+            if (!success)
+                return BadRequest(new { message = "Branş silinemedi." });
+            return Ok(new { message = "Branş silindi." });
+        }
+
+        [HttpPut("islemler/{id}")]
+        public async Task<IActionResult> IslemGuncelle(int id, [FromBody] IslemGuncelleDto dto)
+        {
+            var (success, message) = await _personelService.IslemGuncelleAsync(id, dto);
+            if (!success)
+                return BadRequest(new { message });
+            return Ok(new { message });
+        }
+
+        [HttpPut("doktorlar/{id}")]
+        public async Task<IActionResult> DoktorGuncelle(int id, [FromBody] DoktorGuncelleDto dto)
+        {
+            var (success, message) = await _personelService.DoktorGuncelleAsync(id, dto);
+            if (!success)
+                return BadRequest(new { message });
+            return Ok(new { message });
+        }
     }
 }

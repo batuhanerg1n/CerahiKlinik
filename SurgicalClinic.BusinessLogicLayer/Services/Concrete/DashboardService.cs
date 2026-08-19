@@ -22,6 +22,12 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             _unitOfWork = unitOfWork;
             _nameMaskingService = nameMaskingService;
         }
+        private static decimal GetRandevuFiyat( Randevu r)
+        {
+            if (r.IslemSecenek != null)
+                return r.IslemSecenek.Fiyat;
+            return r.Islem?.Fiyat ?? 0;
+        }
 
         public async Task<AylikPerformansDto> GetAylikPerformansAsync()
         {
@@ -35,6 +41,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             r.Durum == RandevuDrum.Tamamlandi)
             .Include(r => r.Doktor)
             .Include(r => r.Islem)
+            .Include(r => r.IslemSecenek)
             .ToListAsync();
 
             var doktorPerformans = aylikRandevular
@@ -45,7 +52,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                     DoktorSoyad = g.Key.Soyad,
                     DoktorUnvan = g.Key.Unvan,
                     TamamlananMuayeneSayisi = g.Count(),
-                    ToplamGelir = g.Sum(r => r.Islem.Fiyat)
+                    ToplamGelir = g.Sum(r => GetRandevuFiyat(r))
                 }).ToList();
 
             var islemGelirleri = aylikRandevular
@@ -53,7 +60,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 .Select(g => new IslemGelirDto
                 {
                     IslemAd = g.Key,
-                    ToplamGelir = g.Sum(r => r.Islem.Fiyat)
+                    ToplamGelir = g.Sum(r => GetRandevuFiyat(r))
                 }).ToList();
             return new AylikPerformansDto
             {
@@ -69,6 +76,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
 
             var bugunkiRandevular = await randevuRepo.GetWhere(r => r.Tarih.Date==bugun)
                 .Include(r=>r.Islem)
+                .Include(r=>r.IslemSecenek)
                 .ToListAsync();
 
             return new DashboardOzetDto
@@ -77,7 +85,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 BekleyenRandevuSayisi = bugunkiRandevular.Count(r => r.Durum == RandevuDrum.Beklemede),
                 AktifRandevuSayisi = bugunkiRandevular.Count(r => r.Durum == RandevuDrum.Onaylandi),
                 GunlukToplmHastaSayisi = bugunkiRandevular.Select(r => r.HastaId).Distinct().Count(),
-                GunlukToplamGelir = bugunkiRandevular.Where(r => r.Durum == RandevuDrum.Tamamlandi).Sum(r => r.Islem?.Fiyat ?? 0)
+                GunlukToplamGelir = bugunkiRandevular.Where(r => r.Durum == RandevuDrum.Tamamlandi).Sum(r => GetRandevuFiyat(r))
             };
         }
 
