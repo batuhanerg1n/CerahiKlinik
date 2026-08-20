@@ -67,6 +67,8 @@ export default function Login() {
 
         if (userRole === 4) {
           navigate('/doktor/takvim', { replace: true });
+        } else if (userRole === 2) {
+          navigate('/personel/randevular', { replace: true });
         } else {
           navigate('/dashboard', { replace: true });
         }

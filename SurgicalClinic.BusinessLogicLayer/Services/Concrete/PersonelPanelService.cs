@@ -327,7 +327,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 {
                     Ad = dto.Ad,
                     Soyad = dto.Soyad,
-                    Telefon = dto.telefon,
+                    Telefon = dto.Telefon,
                     DogumTarihi = dto.DogumTarihi,
                     Notlar = dto.Notlar
                 };
@@ -342,7 +342,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 {
                     hasta.Ad = dto.Ad;
                     hasta.Soyad = dto.Soyad;
-                    hasta.Telefon = dto.telefon;
+                    hasta.Telefon = dto.Telefon;
                     hasta.DogumTarihi = dto.DogumTarihi;
                     hasta.Notlar = dto.Notlar;
                     hastaRepo.Update(hasta);

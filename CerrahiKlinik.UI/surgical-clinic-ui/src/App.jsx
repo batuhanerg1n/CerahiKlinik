@@ -16,6 +16,8 @@ import Ayarlar from './pages/Ayarlar';
 import { Toaster } from 'react-hot-toast';
 import Doktorlar from './pages/Doktorlar';
 import Kullanicilar from './pages/Kullanicilar';
+import PersonelLayout from './components/PersonelLayout';
+import Hastalar from './pages/Hastalar';
 
 function MainRoutes() {
   const { user } = useAuth(); 
@@ -39,7 +41,9 @@ function MainRoutes() {
         <Route element={<ProtectedRoute />}>
           
           <Route path="/panel" element={
-            role === 4 ? <Navigate to="/doktor/takvim" replace /> : <Navigate to="/dashboard" replace />
+            role === 4 ? <Navigate to="/doktor/takvim" replace />
+              : role === 2 ? <Navigate to="/personel/randevular" replace />
+                : <Navigate to="/dashboard" replace />
           } />
 
           <Route element={<Layout />}>
@@ -48,13 +52,19 @@ function MainRoutes() {
             <Route path="/ayarlar" element={<Ayarlar/>}/>
             <Route path="/doktorlar" element={<Doktorlar/>} />
             <Route path= "/kullanicilar" element={<Kullanicilar/>} />
+            <Route path="/hastalar" element ={<Hastalar/>} />
           </Route>
 
           <Route path="/doktor" element={<DoktorLayout />}>
             <Route path="takvim" element={<DoktorTakvim />} />
             <Route path="randevular" element={<DoktorRandevular />} />
           </Route>
-
+          
+          <Route path="/personel" element={<PersonelLayout />}>
+            <Route path="randevular" element={<Randevular />} />
+            <Route path ="hastalar" element={<Hastalar/>}/>
+          </Route>
+        
         </Route>
       </Routes>
     </Router>
