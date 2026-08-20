@@ -71,7 +71,7 @@ namespace SurgicalClinic.API.Controllers
             var result = await _personelService.GetTumIslemlerAsync();
             return Ok(result);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("islemler")]
         public async Task<IActionResult> IslemEkle([FromBody] IslemOlusturDto dto)
         {
@@ -79,6 +79,7 @@ namespace SurgicalClinic.API.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("islemler/{id}")]
         public async Task<IActionResult> IslemSil(int id)
         {
@@ -94,7 +95,7 @@ namespace SurgicalClinic.API.Controllers
             var result = await _personelService.GetTumDoktorlarAsync();
             return Ok(result);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("doktorlar")]
         public async Task<IActionResult> DoktorOlustur([FromBody] DoktorOlusturDto dto)
         {
@@ -104,6 +105,7 @@ namespace SurgicalClinic.API.Controllers
             return Ok(new { message });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("doktorlar/{id}")]
         public async Task<IActionResult> DoktorSil(int id)
         {
@@ -113,6 +115,7 @@ namespace SurgicalClinic.API.Controllers
             return Ok(new { message = "Doktor silindi." });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("branslar")]
         public async Task<IActionResult> BransEkle([FromBody] BransEkleDto dto)
         {
@@ -123,6 +126,7 @@ namespace SurgicalClinic.API.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("branslar/{id}")]
         public async Task<IActionResult> BransSil(int id)
         {
@@ -132,6 +136,7 @@ namespace SurgicalClinic.API.Controllers
             return Ok(new { message = "Branş silindi." });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("islemler/{id}")]
         public async Task<IActionResult> IslemGuncelle(int id, [FromBody] IslemGuncelleDto dto)
         {
@@ -141,6 +146,7 @@ namespace SurgicalClinic.API.Controllers
             return Ok(new { message });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("doktorlar/{id}")]
         public async Task<IActionResult> DoktorGuncelle(int id, [FromBody] DoktorGuncelleDto dto)
         {
@@ -148,6 +154,34 @@ namespace SurgicalClinic.API.Controllers
             if (!success)
                 return BadRequest(new { message });
             return Ok(new { message });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("kullanicilar")]
+        public async Task<IActionResult> GetKullanicilar()
+        {
+            var result = await _personelService.GetKullanicilarAsync();
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("kullanicilar")]
+        public async Task<IActionResult> KullaniciOlustur([FromBody] KullaniciOlusturDto dto)
+        {
+            var (success, message) = await _personelService.KullaniciOlusturAsync(dto);
+            if (!success)
+                return BadRequest(new { message });
+            return Ok(new { message });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("kullanicilar/{id}")]
+        public async Task<IActionResult> KullaniciSil(int id)
+        {
+            var success = await _personelService.KullaniciSilAsync(id);
+            if (!success)
+                return BadRequest(new { message = "Kullanıcı silinemedi." });
+            return Ok(new { message = "Kullanıcı silindi." });
         }
     }
 }

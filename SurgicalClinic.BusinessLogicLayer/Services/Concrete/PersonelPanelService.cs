@@ -157,6 +157,24 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             });
         }
 
+        public async Task<IEnumerable<KullaniciListeDto>> GetKullanicilarAsync()
+        {
+            var kullaniciRepo = _unitOfWork.GetRepository<Kullanici>();
+            var kullanicilar = await kullaniciRepo
+                .GetWhere(k => k.Rol == Rol.Admin || k.Rol == Rol.Personel)
+                .ToListAsync();
+
+            return kullanicilar.Select(k => new KullaniciListeDto
+            {
+                Id = k.Id,
+                Ad = k.Ad,
+                Soyad = k.Soyad,
+                Email = k.Email,
+                Rol = (int)k.Rol,
+                RolAd = k.Rol.ToString()
+            });
+        }
+
         public async Task<PageResultDto<RandevuDetailDto>> GetRandevularAsync(string? query, RandevuDrum? drum, int pageIndex = 1, int PageSize = 10)
         {
             var randevuRepo = _unitOfWork.GetRepository<Randevu>();
@@ -451,6 +469,42 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             if (islem == null) return false;
 
             islemRepo.Remove(islem);   
+            await _unitOfWork.SaveChangeAsync();
+            return true;
+        }
+
+        public async Task<(bool Success, string Message)> KullaniciOlusturAsync(KullaniciOlusturDto dto)
+        {
+            var kullaniciRepo = _unitOfWork.GetRepository<Kullanici>();
+
+            if (dto.Rol != 1 && dto.Rol != 2)
+                return (false, "Geçersiz rol.");
+
+            var emailVar = await kullaniciRepo.GetWhere(k => k.Email == dto.Email).AnyAsync();
+            if (emailVar)
+                return (false, "Bu email adresi zaten kayıtlı.");
+
+            var kullanici = new Kullanici
+            {
+                Ad = dto.Ad,
+                Soyad = dto.Soyad,
+                Email = dto.Email,
+                passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Sifre),
+                Rol = (Rol)dto.Rol
+            };
+            await kullaniciRepo.AddAsync(kullanici);
+            await _unitOfWork.SaveChangeAsync();
+
+            return (true, "Kullanıcı başarıyla oluşturuldu.");
+        }
+
+        public async Task<bool> KullaniciSilAsync(int kullaniciId)
+        {
+            var kullaniciRepo = _unitOfWork.GetRepository<Kullanici>();
+            var kullanici = await kullaniciRepo.GetByIdAsync(kullaniciId);
+            if (kullanici == null) return false;
+
+            kullaniciRepo.Remove(kullanici);
             await _unitOfWork.SaveChangeAsync();
             return true;
         }

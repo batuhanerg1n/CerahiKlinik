@@ -15,6 +15,7 @@ import DoktorRandevular from './pages/DoktorRandevular';
 import Ayarlar from './pages/Ayarlar';
 import { Toaster } from 'react-hot-toast';
 import Doktorlar from './pages/Doktorlar';
+import Kullanicilar from './pages/Kullanicilar';
 
 function MainRoutes() {
   const { user } = useAuth(); 
@@ -46,6 +47,7 @@ function MainRoutes() {
             <Route path="/randevular" element={<Randevular />} />
             <Route path="/ayarlar" element={<Ayarlar/>}/>
             <Route path="/doktorlar" element={<Doktorlar/>} />
+            <Route path= "/kullanicilar" element={<Kullanicilar/>} />
           </Route>
 
           <Route path="/doktor" element={<DoktorLayout />}>

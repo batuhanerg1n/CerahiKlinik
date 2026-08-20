@@ -26,6 +26,7 @@ export default function Layout() {
     { name: 'Hastalar', path: '/hastalar', icon: <Users className="w-5 h-5" /> },
     { name: 'Doktorlar', path: '/doktorlar', icon: <Stethoscope className="w-5 h-5" /> },
     { name: 'Ayarlar', path: '/ayarlar', icon: <Settings className="w-5 h-5" /> },
+    {name:'Kullanicilar', path:'/kullanicilar', icon : <Users className='w-5 h-5'/>},
   ];
 
   
