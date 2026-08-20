@@ -3,6 +3,8 @@ import axiosInstance from '../api/axiosInstance';
 import {
   Plus, Trash2, Tag, Layers, X, Save, Settings as SettingsIcon, Award
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../components/ConfirmModal';
 
 export default function Ayarlar() {
   const [aktifSekme, setAktifSekme] = useState('islemler');   
@@ -16,7 +18,7 @@ export default function Ayarlar() {
   const [fiyat, setFiyat] = useState('');
   const [secenekler, setSecenekler] = useState([{ secenekAd: '', fiyat: '' }]);
   const [kaydediyor, setKaydediyor] = useState(false);
-
+  const [confirmData, setConfirmData] = useState(null);
   const [branslar, setBranslar] = useState([]);
   const [yeniBrans, setYeniBrans] = useState('');
 
@@ -69,13 +71,13 @@ export default function Ayarlar() {
   };
 
   const handleKaydet = async () => {
-    if (!ad.trim()) { alert('İşlem adı zorunludur.'); return; }
+    if (!ad.trim()) { toast.error('İşlem adı zorunludur.'); return; }
     if (fiyatTipi === 1 && (!fiyat || Number(fiyat) <= 0)) {
-      alert('Sabit fiyat girmelisiniz.'); return;
+      toast.error('Sabit fiyat girmelisiniz.'); return;
     }
     if (fiyatTipi === 2) {
       const gecerli = secenekler.filter(s => s.secenekAd.trim() && Number(s.fiyat) > 0);
-      if (gecerli.length === 0) { alert('En az bir seçenek ve fiyatı girmelisiniz.'); return; }
+      if (gecerli.length === 0) { toast.error('En az bir seçenek ve fiyatı girmelisiniz.'); return; }
     }
 
     const payload = {
@@ -104,20 +106,28 @@ export default function Ayarlar() {
       fetchIslemler();
     } catch (err) {
       console.error('İşlem kaydedilemedi:', err);
-      alert(err.response?.data?.message || 'İşlem kaydedilirken hata oluştu.');
+      toast.error(err.response?.data?.message || 'İşlem kaydedilirken hata oluştu.');
     } finally {
       setKaydediyor(false);
     }
   };
 
   const handleSil = async (id) => {
-    if (!window.confirm('Bu işlemi silmek istediğinize emin misiniz?')) return;
+    setConfirmData({
+      baslik: 'İşlemi Sil',
+      mesaj: 'Bu işlemi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.',
+      onaylaText: 'Evet, Sil',
+      onConfirm: () => islemSil(id)
+    });
+  };
+  const islemSil = async (id) => {
     try {
       await axiosInstance.delete(`/PersonelPanel/islemler/${id}`);
+      toast.success('İşlem silindi.');
       fetchIslemler();
     } catch (err) {
       console.error('İşlem silinemedi:', err);
-      alert('İşlem silinemedi. Bu işleme bağlı randevular olabilir.');
+      toast.error('İşlem silinemedi. Bu işleme bağlı randevular olabilir.');
     }
   };
 
@@ -131,25 +141,34 @@ export default function Ayarlar() {
   };
 
   const handleBransEkle = async () => {
-    if (!yeniBrans.trim()) { alert('Branş adı boş olamaz.'); return; }
+    if (!yeniBrans.trim()) { toast.error('Branş adı boş olamaz.'); return; }
     try {
       await axiosInstance.post('/PersonelPanel/branslar', { ad: yeniBrans.trim() });
       setYeniBrans('');
       fetchBranslar();
     } catch (err) {
       console.error('Branş eklenemedi:', err);
-      alert('Branş eklenemedi.');
+      toast.error('Branş eklenemedi.');
     }
   };
 
-  const handleBransSil = async (id) => {
-    if (!window.confirm('Bu branşı silmek istediğinize emin misiniz?')) return;
+  const handleBransSil = (id) => {
+    setConfirmData({
+      baslik: 'Branşı Sil',
+      mesaj: 'Bu branşı silmek istediğinize emin misiniz?',
+      onaylaText: 'Evet, Sil',
+      onConfirm: () => bransSil(id)
+    });
+  };
+
+  const bransSil = async (id) => {
     try {
       await axiosInstance.delete(`/PersonelPanel/branslar/${id}`);
+      toast.success('Branş silindi.');
       fetchBranslar();
     } catch (err) {
       console.error('Branş silinemedi:', err);
-      alert('Branş silinemedi. Bu branşa bağlı doktorlar olabilir.');
+      toast.error('Branş silinemedi. Bu branşa bağlı doktorlar olabilir.');
     }
   };
 
@@ -401,6 +420,7 @@ export default function Ayarlar() {
           </div>
         </div>
       )}
+      <ConfirmModal data={confirmData} onClose={() => setConfirmData(null)} />
     </div>
   );
 }

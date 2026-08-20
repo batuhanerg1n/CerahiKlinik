@@ -18,9 +18,6 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Abstract
         Task<IEnumerable<HastaDto>> GetHastalarAsync();
         Task<HastaDto?> GetHastaByIdAsync(int id);
         Task<HastaDto> HastaEkleVeGuncelleAsync(HastaDto dto);
-
-        Task<bool> DoktorProfilOlusturAsync(int kullaniciId,DoktorProfilOlusturDto dto);
-
         Task<IEnumerable<TakvimEventDto>> GetTakvimEventAsync(int ay, int yil);
 
         Task<IEnumerable<IslemDto>> GetTumIslemlerAsync();

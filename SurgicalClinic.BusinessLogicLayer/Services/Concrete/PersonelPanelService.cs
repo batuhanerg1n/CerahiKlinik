@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BCrypt.Net;
 
 namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
 {
@@ -80,24 +81,21 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             var kullaniciRepo = _unitOfWork.GetRepository<Kullanici>();
             var doktorRepo = _unitOfWork.GetRepository<Doktor>();
 
-            // Email zaten kayıtlı mı?
             var emailVar = await kullaniciRepo.GetWhere(k => k.Email == dto.Email).AnyAsync();
             if (emailVar)
                 return (false, "Bu email adresi zaten kayıtlı.");
 
-            // 1. Kullanıcı hesabı (Doktor rolü)
             var kullanici = new Kullanici
             {
                 Ad = dto.Ad,
                 Soyad = dto.Soyad,
                 Email = dto.Email,
-                passwordHash = dto.Sifre,   // mevcut sistem plain text tutuyor
+                passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Sifre),
                 Rol = Rol.Doktor
             };
             await kullaniciRepo.AddAsync(kullanici);
             await _unitOfWork.SaveChangeAsync();
 
-            // 2. Doktor profili
             var doktor = new Doktor
             {
                 KullaniciId = kullanici.Id,
@@ -116,37 +114,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             return (true, "Doktor başarıyla oluşturuldu.");
         }
 
-        public async Task<bool> DoktorProfilOlusturAsync(int kullaniciId, DoktorProfilOlusturDto dto)
-        {
-            var kullaniciRepo = _unitOfWork.GetRepository<Kullanici>();
-            var doktorRepo = _unitOfWork.GetRepository<Doktor>();
-
-            var kullanici=await kullaniciRepo.GetByIdAsync(kullaniciId);
-            if(kullanici == null) 
-                return false;
-            var mevcutDoktor = await doktorRepo.GetWhere(d => d.KullaniciId == kullaniciId).FirstOrDefaultAsync();
-            if(mevcutDoktor == null)
-                return false;
-            var yeniDoktor = new Doktor
-            {
-                KullaniciId = kullaniciId,
-                Ad = kullanici.Ad,
-                Soyad = kullanici.Soyad,
-                Unvan = dto.Unvan,
-                Aciklama = dto.Aciklama
-            };
-            foreach(var brandsId in dto.BransId)
-            {
-                yeniDoktor.DoktorBranslar.Add(new DoktorBrans
-                {
-                    BransId = brandsId
-                });
-            }
-            await doktorRepo.AddAsync(yeniDoktor);
-            await _unitOfWork.SaveChangeAsync();
-            return true;
-
-        }
+       
 
         public async Task<bool> DoktorSilAsync(int doktorId)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SurgicalClinic.BusinessLogicLayer.DTOs;
 using SurgicalClinic.BusinessLogicLayer.Services.Abstract;
 
@@ -25,6 +26,8 @@ namespace SurgicalClinic.API.Controllers
             }
             return Ok(result);
         }
+
+        
 
     }
 }

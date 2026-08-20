@@ -78,7 +78,7 @@ namespace SurgicalClinic.DataAccessLayer.Context
                 .HasOne(s => s.Islem)
                 .WithMany(i =>i.Secenekler)
                 .HasForeignKey(s => s.IslemId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Randevu>()
                 .HasOne( r=>r.IslemSecenek)

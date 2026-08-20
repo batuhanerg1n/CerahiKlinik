@@ -56,18 +56,7 @@ namespace SurgicalClinic.API.Controllers
             var result = await _personelService.HastaEkleVeGuncelleAsync(dto);
             return Ok(result);
         }
-        [HttpPost("doktorlar/profil")]
-        public async Task<IActionResult> DoktorProfilOlustur([FromBody] DoktorProfilOlusturDto dto)
-        {
-            var kullaniciIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(kullaniciIdClaim) || !int.TryParse(kullaniciIdClaim, out int kullaniciId))
-                return Unauthorized();
-            var result = await _personelService.DoktorProfilOlusturAsync(kullaniciId, dto);
-            if (!result)
-                return BadRequest(new { message = "Doktor profil uluşturulamadı veya bu kullanıcıya ait zaten kullanıcı mevcut" });
-            return Ok(new { messagw = "Doktor profliniz başarıyla oluşturuldu" });
-
-        }
+        
 
         [HttpGet("takvim")]
         public async Task<IActionResult> GetTakvim([FromQuery] int ay, [FromQuery] int yil)

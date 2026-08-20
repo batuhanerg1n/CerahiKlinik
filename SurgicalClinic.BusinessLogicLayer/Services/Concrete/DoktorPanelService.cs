@@ -42,6 +42,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             return gecmis.Select(r => new DoktorRandevuOzetDto
             {
                 RandevuId = r.Id,
+                HastaId = hastaId,
                 HastaAd = r.Hasta?.Ad ?? "",
                 HastaSoyad = r.Hasta?.Soyad ?? "",
                 HastaTelefon = r.Hasta?.Telefon ?? "",
@@ -77,6 +78,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             return list.Select(r => new DoktorRandevuOzetDto
             {
                 RandevuId = r.Id,
+                HastaId = r.HastaId,
                 HastaAd = r.Hasta?.Ad ?? "",
                 HastaSoyad = r.Hasta?.Soyad ?? "",
                 HastaTelefon = r.Hasta?.Telefon ?? "",
@@ -111,6 +113,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                     Randevular = g.Select(r => new DoktorRandevuOzetDto
                     {
                         RandevuId = r.Id,
+                        HastaId = r.Id,
                         HastaAd = r.Hasta?.Ad ?? "",
                         HastaSoyad = r.Hasta?.Soyad ?? "",
                         HastaTelefon = r.Hasta?.Telefon ?? "",

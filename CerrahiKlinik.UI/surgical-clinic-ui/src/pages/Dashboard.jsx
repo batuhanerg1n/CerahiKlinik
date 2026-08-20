@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import RandevuModal from './RandevuModal';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -93,7 +94,7 @@ export default function Dashboard() {
       fetchDashboardData();
     } catch (err) {
       console.error('Durum güncellenirken hata oluştu:', err);
-      alert('Randevu durumu güncellenemedi.');
+      toast.error('Randevu durumu güncellenemedi.');
     } finally {
       setActionLoadingId(null);
     }

@@ -4,6 +4,7 @@ import {
   Calendar as CalendarIcon, Clock, User, 
   FileText, CheckCircle2, ChevronLeft, ChevronRight, History , XCircle, AlertTriangle
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function DoktorTakvim() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -67,7 +68,7 @@ export default function DoktorTakvim() {
   const handleTamamlaSubmit = async () => {
     try {
       if (!tamamlaModal.randevuId) {
-        alert("Randevu ID bulunamadı!");
+        toast.error("Randevu ID bulunamadı!");
         return;
       }
 
@@ -80,10 +81,10 @@ export default function DoktorTakvim() {
       setDoktorNotu('');
       fetchGunlukRandevular();
       fetchTakvim();
-      alert("Muayene başarıyla tamamlandı!");
+      toast.success("Muayene başarıyla tamamlandı!");
     } catch (err) {
       console.error('Randevu tamamlanamadı:', err);
-      alert('İşlem başarısız oldu. Lütfen tekrar deneyin.');
+      toast.error('İşlem başarısız oldu. Lütfen tekrar deneyin.');
     }
   };
 
@@ -100,7 +101,7 @@ const handleIptalOnayla = async () => {
     fetchTakvim();
   } catch (err) {
     console.error('Randevu iptal edilmedi:', err);
-    alert('İşlem başarısız oldu');
+    toast.error('İşlem başarısız oldu');
   }
 };
   const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();

@@ -6,16 +6,14 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute'; 
 import Layout from './components/Layout';               
 import DoktorLayout from './components/DoktorLayout';   
-
 import Dashboard from './pages/Dashboard';
 import Randevular from './pages/Randevular';
 import Login from './pages/Login';
 import PublicHome from './pages/PublicHome'; 
-
 import DoktorTakvim from './pages/DoktorTakvim';
 import DoktorRandevular from './pages/DoktorRandevular';
 import Ayarlar from './pages/Ayarlar';
-
+import { Toaster } from 'react-hot-toast';
 import Doktorlar from './pages/Doktorlar';
 
 function MainRoutes() {
@@ -24,6 +22,15 @@ function MainRoutes() {
 
   return (
     <Router>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: { fontSize: '14px', fontWeight: 500 },
+          success: { iconTheme: { primary: '#059669', secondary: '#fff' } },
+          error: { iconTheme: { primary: '#e11d48', secondary: '#fff' } },
+        }}
+      />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<PublicHome />} />

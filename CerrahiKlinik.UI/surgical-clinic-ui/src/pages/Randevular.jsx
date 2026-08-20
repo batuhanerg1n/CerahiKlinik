@@ -5,6 +5,7 @@ import {
   Phone, Globe, ChevronLeft, ChevronRight, CheckCircle2, AlertTriangle
 } from 'lucide-react';
 import RandevuModal from './RandevuModal'; 
+import toast from 'react-hot-toast';
 
 export default function Randevular() {
   const [randevular, setRandevular] = useState([]);
@@ -63,7 +64,7 @@ export default function Randevular() {
       fetchRandevular();
     } catch (err) {
       console.error('Durum güncellenemedi:', err);
-      alert('İşlem başarısız oldu.');
+      toast.error('İşlem başarısız oldu.');
     }
   };
 

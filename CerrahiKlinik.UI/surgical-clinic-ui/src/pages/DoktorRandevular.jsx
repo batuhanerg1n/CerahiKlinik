@@ -4,6 +4,7 @@ import {
   Search, Clock, FileText, CheckCircle2, XCircle, AlertTriangle,
   ChevronLeft, ChevronRight, User
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function DoktorRandevular() {
   const [randevular, setRandevular] = useState([]);
@@ -52,7 +53,7 @@ export default function DoktorRandevular() {
       fetchTumRandevular();
     } catch (err) {
       console.error('Randevu tamamlanamadı:', err);
-      alert('İşlem başarısız oldu.');
+      toast.error('İşlem başarısız oldu.');
     }
   };
 
@@ -64,7 +65,7 @@ export default function DoktorRandevular() {
       fetchTumRandevular();
     } catch (err) {
       console.error('Randevu iptal edilemedi:', err);
-      alert('İşlem başarısız oldu.');
+      toast.error('İşlem başarısız oldu.');
     }
   };
 

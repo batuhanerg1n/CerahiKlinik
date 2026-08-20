@@ -3,6 +3,8 @@ import axiosInstance from '../api/axiosInstance';
 import {
     Plus, Trash2, X, Save, Stethoscope, Mail, Award, User, Eye, EyeOff
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../components/ConfirmModal';
 
 export default function Doktorlar() {
     const [doktorlar, setDoktorlar] = useState([]);
@@ -75,7 +77,7 @@ export default function Doktorlar() {
     };
 
     const handleKaydet = async () => {
-        if (!ad.trim() || !soyad.trim()) { alert('Ad ve soyad zorunludur.'); return; }
+        if (!ad.trim() || !soyad.trim()) { toast.error('Ad ve soyad zorunludur.'); return; }
 
         if (editId) {
             const payload = {
@@ -92,15 +94,15 @@ export default function Doktorlar() {
                 fetchDoktorlar();
             } catch (err) {
                 console.error('Doktor güncellenemedi:', err);
-                alert(err.response?.data?.message || 'Doktor güncellenirken hata oluştu.');
+                toast.error(err.response?.data?.message || 'Doktor güncellenirken hata oluştu.');
             } finally {
                 setKaydediyor(false);
             }
             return;
         }
 
-        if (!email.trim()) { alert('Email zorunludur.'); return; }
-        if (!sifre.trim() || sifre.length < 4) { alert('Şifre en az 4 karakter olmalı.'); return; }
+        if (!email.trim()) { toast.error('Email zorunludur.'); return; }
+        if (!sifre.trim() || sifre.length < 6) { toast.error('Şifre en az 6 karakter olmalı.'); return; }
 
         const payload = {
             ad: ad.trim(),
@@ -119,20 +121,29 @@ export default function Doktorlar() {
             fetchDoktorlar();
         } catch (err) {
             console.error('Doktor eklenemedi:', err);
-            alert(err.response?.data?.message || 'Doktor eklenirken hata oluştu.');
+            toast.error(err.response?.data?.message || 'Doktor eklenirken hata oluştu.');
         } finally {
             setKaydediyor(false);
         }
     };
 
-    const handleSil = async (id) => {
-        if (!window.confirm('Bu doktoru silmek istediğinize emin misiniz?')) return;
+    const handleSil = (id) => {
+        setConfirmData({
+            baslik: 'Doktoru Sil',
+            mesaj: 'Bu doktoru silmek istediğinize emin misiniz? Bu işlem geri alınamaz.',
+            onaylaText: 'Evet, Sil',
+            onConfirm: () => doktorSil(id)
+        });
+    };
+
+    const doktorSil = async (id) => {
         try {
             await axiosInstance.delete(`/PersonelPanel/doktorlar/${id}`);
+            toast.success('Doktor silindi.');
             fetchDoktorlar();
         } catch (err) {
             console.error('Doktor silinemedi:', err);
-            alert('Doktor silinemedi. Bu doktora bağlı randevular olabilir.');
+            toast.error('Doktor silinemedi. Bu doktora bağlı randevular olabilir.');
         }
     };
 
@@ -237,6 +248,16 @@ export default function Doktorlar() {
                             {!editId && (
                                 <>
                                     <div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-slate-600 mb-1">Email (giriş için)</label>
+                                            <input
+                                                type="email"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                placeholder="doktor@klinik.com"
+                                                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                            />
+                                        </div>
                                         <label className="block text-sm font-semibold text-slate-600 mb-1">Şifre (giriş için)</label>
                                         <div className="relative">
                                             <input
@@ -305,6 +326,7 @@ export default function Doktorlar() {
                     </div>
                 </div>
             )}
+            <ConfirmModal data={confirmData} onClose={() => setConfirmData(null)} />
         </div>
     );
 }

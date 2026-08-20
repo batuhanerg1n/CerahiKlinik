@@ -13,6 +13,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using BCrypt.Net;
 
 namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
 {
@@ -30,9 +31,9 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
         public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto request)
         {
             var userRepo = _unitOfWork.GetRepository<Kullanici>();
-            var user = userRepo.GetWhere(u => u.Email == request.Email && u.passwordHash == request.Password).FirstOrDefault();
+            var user = userRepo.GetWhere(u => u.Email == request.Email).FirstOrDefault();
 
-            if (user == null)
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.passwordHash))
                 return null;
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -59,6 +60,8 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 Rol = user.Rol.ToString(),
                 Expiration = tokenDescriptor.Expires.Value
             };
+
         }
+        
     }
 }
