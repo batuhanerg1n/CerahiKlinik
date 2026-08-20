@@ -146,11 +146,11 @@ export default function Hastalar() {
                 </div>
                 <Edit3 className="w-4 h-4 text-slate-300 ml-auto" />
               </div>
-              {h.dogumTarihi && (
-                <p className="text-xs text-slate-400 flex items-center gap-1">
-                  <Calendar className="w-3 h-3" /> {new Date(h.dogumTarihi).toLocaleDateString('tr-TR')}
-                </p>
-              )}
+                  {h.dogumTarihi && new Date(h.dogumTarihi).getFullYear() > 1900 && (
+                      <p className="text-xs text-slate-400 flex items-center gap-1">
+                          <Calendar className="w-3 h-3" /> {new Date(h.dogumTarihi).toLocaleDateString('tr-TR')}
+                      </p>
+                  )}
               {h.notlar && <p className="text-xs text-slate-500 mt-2 line-clamp-2">{h.notlar}</p>}
             </div>
           ))}

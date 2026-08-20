@@ -152,6 +152,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 Id = h.Id,
                 Ad = h.Ad,
                 Soyad = h.Soyad,
+                Telefon = h.Telefon,
                 DogumTarihi = h.DogumTarihi,
                 Notlar = h.Notlar
             });

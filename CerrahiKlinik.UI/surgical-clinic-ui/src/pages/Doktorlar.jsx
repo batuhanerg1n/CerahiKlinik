@@ -13,7 +13,7 @@ export default function Doktorlar() {
     const [modalAcik, setModalAcik] = useState(false);
     const [kaydediyor, setKaydediyor] = useState(false);
     const [editId, setEditId] = useState(null);   
-
+    const [confirmData, setConfirmData] = useState(null);
     const [ad, setAd] = useState('');
     const [soyad, setSoyad] = useState('');
     const [email, setEmail] = useState('');
