@@ -39,33 +39,41 @@ function MainRoutes() {
         <Route path="/" element={<PublicHome />} />
 
         <Route element={<ProtectedRoute />}>
-          
           <Route path="/panel" element={
             role === 4 ? <Navigate to="/doktor/takvim" replace />
               : role === 2 ? <Navigate to="/personel/randevular" replace />
                 : <Navigate to="/dashboard" replace />
           } />
-
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={[1]} />}>
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/randevular" element={<Randevular />} />
-            <Route path="/ayarlar" element={<Ayarlar/>}/>
-            <Route path="/doktorlar" element={<Doktorlar/>} />
-            <Route path= "/kullanicilar" element={<Kullanicilar/>} />
-            <Route path="/hastalar" element ={<Hastalar/>} />
+            <Route path="/ayarlar" element={<Ayarlar />} />
+            <Route path="/doktorlar" element={<Doktorlar />} />
+            <Route path="/kullanicilar" element={<Kullanicilar />} />
+            <Route path="/hastalar" element={<Hastalar />} />
           </Route>
-
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={[4]} />}>
           <Route path="/doktor" element={<DoktorLayout />}>
             <Route path="takvim" element={<DoktorTakvim />} />
             <Route path="randevular" element={<DoktorRandevular />} />
           </Route>
-          
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={[2]} />}>
           <Route path="/personel" element={<PersonelLayout />}>
             <Route path="randevular" element={<Randevular />} />
-            <Route path ="hastalar" element={<Hastalar/>}/>
+            <Route path="hastalar" element={<Hastalar />} />
           </Route>
-        
         </Route>
+        <Route path="*" element={
+          !user ? <Navigate to="/login" replace />
+            : role === 4 ? <Navigate to="/doktor/takvim" replace />
+              : role === 2 ? <Navigate to="/personel/randevular" replace />
+                : role === 1 ? <Navigate to="/dashboard" replace />
+                  : <Navigate to="/login" replace />
+        } />
       </Routes>
     </Router>
   );
