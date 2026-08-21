@@ -183,5 +183,15 @@ namespace SurgicalClinic.API.Controllers
                 return BadRequest(new { message = "Kullanıcı silinemedi." });
             return Ok(new { message = "Kullanıcı silindi." });
         }
+
+        [HttpPut("randevular/{id}")]
+        public async Task<IActionResult> RandevuGuncelle(int id, [FromBody] RandevuGuncelleDto dto)
+        {
+            var (success, message) = await _personelService.RandevuGuncelleAsync(id, dto);
+            if (success)
+                return BadRequest(new { message });
+            return Ok(new { message });
+
+        }
     }
 }

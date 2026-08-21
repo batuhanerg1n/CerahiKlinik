@@ -85,6 +85,11 @@ namespace SurgicalClinic.DataAccessLayer.Context
                 .WithMany()
                 .HasForeignKey( r => r.IslemSecenekId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Islem>()
+                .HasOne(i => i.Brans)
+                .WithMany()
+                .HasForeignKey( i=>i.BransId)
+                .OnDelete(DeleteBehavior.SetNull);
 
         }
 

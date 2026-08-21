@@ -33,7 +33,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Abstract
         Task<(bool Success, string Message)> DoktorGuncelleAsync(int doktorId, DoktorGuncelleDto dto);
         Task<(bool Success, string Message)> KullaniciOlusturAsync(KullaniciOlusturDto dto);
         Task<IEnumerable<KullaniciListeDto>> GetKullanicilarAsync();
-        Task<bool> KullaniciSilAsync(int kullanicId); 
-
+        Task<bool> KullaniciSilAsync(int kullanicId);
+        Task<(bool Success, string Message)> RandevuGuncelleAsync(int randevuId, RandevuGuncelleDto dto);
     }
 }

@@ -16,6 +16,7 @@ export default function Ayarlar() {
   const [aciklama, setAciklama] = useState('');
   const [fiyatTipi, setFiyatTipi] = useState(1);
   const [fiyat, setFiyat] = useState('');
+  const [secilenBransId, setSecilenBransId] = useState('');
   const [secenekler, setSecenekler] = useState([{ secenekAd: '', fiyat: '' }]);
   const [kaydediyor, setKaydediyor] = useState(false);
   const [confirmData, setConfirmData] = useState(null);
@@ -42,6 +43,7 @@ export default function Ayarlar() {
   const resetForm = () => {
     setAd(''); setAciklama(''); setFiyatTipi(1); setFiyat('');
     setSecenekler([{ secenekAd: '', fiyat: '' }]);
+    setSecilenBransId('');
   };
 
   const acModal = () => { resetForm(); setEditId(null); setModalAcik(true); };
@@ -52,6 +54,7 @@ export default function Ayarlar() {
     setAciklama(islem.aciklama || '');
     setFiyatTipi(islem.fiyatTipi);
     setFiyat(islem.fiyatTipi === 1 ? String(islem.fiyat) : '');
+    setSecilenBransId(islem.bransId ? String(islem.bransId) : '');
     setSecenekler(
       islem.fiyatTipi === 2 && islem.secenekler?.length > 0
         ? islem.secenekler.map(s => ({ id: s.id, secenekAd: s.secenekAd, fiyat: String(s.fiyat) }))
@@ -85,6 +88,7 @@ export default function Ayarlar() {
       aciklama: aciklama.trim(),
       fiyatTipi: fiyatTipi,
       fiyat: fiyatTipi === 1 ? Number(fiyat) : 0,
+      bransId: secilenBransId ? Number(secilenBransId) : null,
       secenekler: fiyatTipi === 2
         ? secenekler.filter(s => s.secenekAd.trim() && Number(s.fiyat) > 0)
             .map(s => ({
@@ -342,6 +346,16 @@ export default function Ayarlar() {
                 <input type="text" value={aciklama} onChange={(e) => setAciklama(e.target.value)}
                   placeholder="Kısa açıklama"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-600 mb-1">Branş (bu işlemi hangi uzmanlık yapar)</label>
+                <select value={secilenBransId} onChange={(e) => setSecilenBransId(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                  <option value="">-- Branş Seçiniz (opsiyonel) --</option>
+                  {branslar.map(b => <option key={b.id} value={b.id}>{b.ad}</option>)}
+                </select>
+                <p className="text-xs text-slate-400 mt-1">Randevu alırken bu işlemi seçen hasta, sadece bu branştaki doktorları görür.</p>
               </div>
 
               <div>

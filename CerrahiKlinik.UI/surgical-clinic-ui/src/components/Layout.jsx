@@ -21,7 +21,7 @@ export default function Layout() {
   };
 
   const menuItems = [
-    { name: 'GenelPanel', path: '/Dashboard', icon: <HomeIcon className="w-5 h-5" /> },
+    { name: 'GenelPanel', path: '/dashboard', icon: <HomeIcon className="w-5 h-5" /> },
     { name: 'Randevular', path: '/randevular', icon: <CalendarDays className="w-5 h-5" /> },
     { name: 'Hastalar', path: '/hastalar', icon: <Users className="w-5 h-5" /> },
     { name: 'Doktorlar', path: '/doktorlar', icon: <Stethoscope className="w-5 h-5" /> },

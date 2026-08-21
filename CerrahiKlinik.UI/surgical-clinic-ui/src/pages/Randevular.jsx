@@ -6,27 +6,23 @@ import {
 } from 'lucide-react';
 import RandevuModal from './RandevuModal'; 
 import toast from 'react-hot-toast';
+import RandevuDuzenleModal from './RandevuDuzenleModal';
 
 export default function Randevular() {
   const [randevular, setRandevular] = useState([]);
   const [loading, setLoading] = useState(true);
-  
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; 
-  
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
-
   const [detayRandevu, setDetayRandevu] = useState(null);
   const [editRandevuId, setEditRandevuId] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
   const [aksiyonRandevu, setAksiyonRandevu] = useState(null);
   const [iptalOnayId, setIptalOnayId] = useState(null);
-
+  const [duzenleRandevu, setDuzenleRandevu] = useState(null);
   useEffect(() => {
     fetchRandevular();
   }, []);
@@ -386,6 +382,15 @@ export default function Randevular() {
                   </button>
                 )}
 
+                {(aksiyonRandevu.durum === 1 || aksiyonRandevu.durum === 2) && (
+                  <button
+                    onClick={() => { setDuzenleRandevu(aksiyonRandevu); setAksiyonRandevu(null); }}
+                    className="w-full text-left px-4 py-3 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 font-semibold hover:bg-blue-100 transition"
+                  >
+                    Randevuyu Düzenle
+                  </button>
+                )}
+
                 {(aksiyonRandevu.durum === 3 || aksiyonRandevu.durum === 4) && (
                   <p className="text-sm text-slate-400 text-center py-4">
                     Bu randevu {aksiyonRandevu.durum === 3 ? 'tamamlanmış' : 'iptal edilmiş'}, işlem yapılamaz.
@@ -463,6 +468,13 @@ export default function Randevular() {
         onSuccess={() => fetchRandevular()} 
         editId={editRandevuId} 
       />
+      {duzenleRandevu && (
+        <RandevuDuzenleModal
+          randevu={duzenleRandevu}
+          onClose={() => setDuzenleRandevu(null)}
+          onSuccess={() => fetchRandevular()}
+        />
+      )}
 
     </div>
   );

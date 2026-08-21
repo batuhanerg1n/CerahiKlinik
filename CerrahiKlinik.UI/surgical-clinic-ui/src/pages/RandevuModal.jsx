@@ -68,9 +68,21 @@ export default function RandevuModal({isOpen, onClose, onSuccess}) {
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === 'islemId') {
-            setFormData({ ...formData, islemId: value, islemSecenekId: '' });
+            setFormData({ ...formData, islemId: value, islemSecenekId: '', doktorId: '' });
+            const secilen = islemler.find(i => i.id === parseInt(value));
+            fetchDoktorlarByBrans(secilen?.bransId);
         } else {
             setFormData({ ...formData, [name]: value });
+        }
+    };
+
+    const fetchDoktorlarByBrans = async (bransId) => {
+        try {
+            const url = bransId ? `/Public/doktorlar?bransId=${bransId}` : '/Public/doktorlar';
+            const res = await axiosInstance.get(url);
+            setDoktorlar(res.data || []);
+        } catch (err) {
+            console.error('Doktorlar filtrelenemedi:', err);
         }
     };
 
@@ -171,15 +183,15 @@ export default function RandevuModal({isOpen, onClose, onSuccess}) {
                                     <Activity className="w-4 h-4"/> Hekim ve İşlem
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <select name="doktorId" required value= {formData.doktorId} onChange={handleChange}className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                                        <option value="">--Hekim Seçiniz --</option>
-                                        {doktorlar.map(d => <option key={d.id} value={d.id}> 
-                                            {d.unvan} {d.ad} {d.soyad}
-                                        </option>)}
-                                    </select>
                                     <select name="islemId" required value={formData.islemId} onChange={handleChange} className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                                         <option value="">--İşlem Seçiniz</option>
                                         {islemler.map( i=> <option key={i.id} value={i.id}>{i.ad}</option>)}
+                                    </select>
+                                    <select name="doktorId" required value={formData.doktorId} onChange={handleChange} disabled={!formData.islemId} className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-slate-100 disabled:cursor-not-allowed">
+                                        <option value="">{formData.islemId ? '--Hekim Seçiniz --' : '--Önce işlem seçiniz--'}</option>
+                                        {doktorlar.map(d => <option key={d.id} value={d.id}> 
+                                            {d.unvan} {d.ad} {d.soyad}
+                                        </option>)}
                                     </select>
                                     {seciliIslem?.fiyatTipi === 2 && (
                                         <select
@@ -238,6 +250,3 @@ export default function RandevuModal({isOpen, onClose, onSuccess}) {
 
 
         }
-    
-
-

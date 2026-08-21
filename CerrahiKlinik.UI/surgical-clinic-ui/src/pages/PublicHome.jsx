@@ -85,9 +85,21 @@ export default function PublicHome() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === 'islemId') {
-      setFormData({ ...formData, islemId: value, islemSecenekId: '' });
+      setFormData({ ...formData, islemId: value, islemSecenekId: '', doktorId: '' });
+      const secilen = islemler.find(i => i.id === parseInt(value));
+      fetchDoktorlarByBrans(secilen?.bransId);
     } else {
       setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const fetchDoktorlarByBrans = async (bransId) => {
+    try {
+      const url = bransId ? `/Public/doktorlar?bransId=${bransId}` : '/Public/doktorlar';
+      const res = await axiosInstance.get(url);
+      setDoktorlar(res.data || []);
+    } catch (err) {
+      console.error('Doktorlar filtrelenemedi:', err);
     }
   };
   const seciliIslem = islemler.find(i => i.id === parseInt(formData.islemId));
@@ -114,7 +126,7 @@ export default function PublicHome() {
         ...formData,
         doktorId: parseInt(formData.doktorId),
         islemId: parseInt(formData.islemId),
-        islemSecenekId: formData.islemSecenekId ? parseInt(formData.islemSecenekId) : null,   // 👈 EKLE
+        islemSecenekId: formData.islemSecenekId ? parseInt(formData.islemSecenekId) : null,   
         tarih: `${formData.tarih}T00:00:00.000Z`,
         saat: `${formData.saat}:00`
       };
@@ -254,24 +266,6 @@ export default function PublicHome() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Doktor Seçin</label>
-                <select
-                  name="doktorId"
-                  required
-                  value={formData.doktorId}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                >
-                  <option value="">-- Hekim Seçiniz --</option>
-                  {doktorlar.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.unvan} {d.ad} {d.soyad}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Yapılacak İşlem / Muayene</label>
                 <select
                   name="islemId"
@@ -309,6 +303,28 @@ export default function PublicHome() {
                     <span className="text-sm font-semibold text-blue-700">Tahmini Ücret</span>
                     <span className="text-lg font-bold text-blue-800">{formatMoney(gosterilecekFiyat)}</span>
                   </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Doktor Seçin</label>
+                <select
+                  name="doktorId"
+                  required
+                  value={formData.doktorId}
+                  onChange={handleChange}
+                  disabled={!formData.islemId}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:bg-slate-100 disabled:cursor-not-allowed"
+                >
+                  <option value="">{formData.islemId ? '-- Hekim Seçiniz --' : '-- Önce işlem seçiniz --'}</option>
+                  {doktorlar.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.unvan} {d.ad} {d.soyad}
+                    </option>
+                  ))}
+                </select>
+                {formData.islemId && doktorlar.length === 0 && (
+                  <p className="text-xs text-amber-600 mt-1">Bu işlem için uygun hekim bulunamadı.</p>
                 )}
               </div>
             </div>

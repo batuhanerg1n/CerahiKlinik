@@ -12,6 +12,8 @@ namespace SurgicalClinic.BusinessLogicLayer.DTOs
         public string Aciklama  { get; set; } = string.Empty;
         public int FiyatTipi { get; set; }
         public int Fiyat { get; set; }
+        public int? BransId { get; set; }
+        public string? BransAd { get; set; }
         public List<IslemSecenekGuncelleDto> Secenekler { get; set; } = new();
 
     }

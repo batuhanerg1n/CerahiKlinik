@@ -16,9 +16,9 @@ namespace SurgicalClinic.API.Controllers
         }
 
         [HttpGet("doktorlar")]
-        public async Task<IActionResult> GetDoktorlar([FromQuery] int? brandsId)
+        public async Task<IActionResult> GetDoktorlar([FromQuery] int? bransId)
         {
-            var result = await _publicService.GetDoktorlarAsync(brandsId);
+            var result = await _publicService.GetDoktorlarAsync(bransId);
             return Ok(result);
         }
         [HttpGet("islem")]

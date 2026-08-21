@@ -71,6 +71,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             var islemRepo = _unitOfWork.GetRepository<Islem>();
             var islemler = await islemRepo.GetWhere(i => true)
                 .Include(i => i.Secenekler)
+                .Include(i =>i.Brans)
                 .ToListAsync();
 
             return islemler.Select(i => new IslemDto
@@ -80,6 +81,8 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 Aciklama = i.Aciklama,
                 FiyatTipi = (int)i.FiyatTipi,
                 Fiyat = i.Fiyat,
+                BransId = i.BransId,
+                BransAd = i.Brans?.Ad,
                 Secenekler = i.Secenekler.Select(s => new IslemSecenekDto
                 {
                     Id = s.Id,

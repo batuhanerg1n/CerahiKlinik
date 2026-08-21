@@ -300,6 +300,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             var islemRepo = _unitOfWork.GetRepository<Islem>();
             var islemler = await islemRepo.GetWhere(i => true)
                 .Include( i =>i.Secenekler)
+                .Include( i =>i.Brans)
                 .ToListAsync();
             return islemler.Select(i => new IslemDto
             {
@@ -308,6 +309,8 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 Aciklama = i.Aciklama,
                 FiyatTipi = (int)i.FiyatTipi,
                 Fiyat = i.Fiyat,
+                BransId=i.BransId,
+                BransAd = i.Brans?.Ad,
                 Secenekler = i.Secenekler.Select(s => new IslemSecenekDto
                 {
                     Id = s.Id,
@@ -364,6 +367,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
                 Aciklama = dto.Aciklama,
                 FiyatTipi = (FiyatTipi)dto.FiyatTipi,
                 Fiyat = dto.FiyatTipi == 1 ? dto.Fiyat : 0,
+                BransId = dto.BransId,
                 Secenekler = dto.FiyatTipi == 2
                     ? dto.Secenekler.Select(s => new IslemSecenek
                     {
@@ -407,6 +411,7 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             islem.Aciklama = dto.Aciklama;
             islem.FiyatTipi = (FiyatTipi)dto.FiyatTipi;
             islem.Fiyat = dto.FiyatTipi == 1 ? dto.Fiyat : 0;
+            islem.BransId=dto.BransId;
 
             if (dto.FiyatTipi == 1)
             {
@@ -525,6 +530,30 @@ namespace SurgicalClinic.BusinessLogicLayer.Services.Concrete
             randevuRepo.Update(randevu);
             await _unitOfWork.SaveChangeAsync();
             return true;
+        }
+
+        public async Task<(bool Success, string Message)> RandevuGuncelleAsync(int randevuId, RandevuGuncelleDto dto)
+        {
+            var randevuRepo = _unitOfWork.GetRepository<Randevu>();
+            var randevu = await randevuRepo.GetByIdAsync(randevuId);
+
+            if (randevu == null)
+                return (false, "Randevu bulunamadı.");
+
+            if (randevu.Durum == RandevuDrum.Tamamlandi || randevu.Durum == RandevuDrum.Iptal)
+                return (false, "Tamamlanmış veya iptal edilmiş randevu düzenlenemez.");
+
+            randevu.DoktorId = dto.DoktorId;
+            randevu.IslemId = dto.IslemId;
+            randevu.IslemSecenekId = dto.IslemSecenekId;
+            randevu.Tarih = dto.Tarih.Date;
+            randevu.Saat = dto.Saat;
+            randevu.HastaNotu = dto.HastaNotu;
+
+            randevuRepo.Update(randevu);
+            await _unitOfWork.SaveChangeAsync();
+
+            return (true, "Randevu güncellendi.");
         }
     }
 }

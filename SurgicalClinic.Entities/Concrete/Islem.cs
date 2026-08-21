@@ -15,6 +15,8 @@ namespace SurgicalClinic.Entities.Concrete
 
         public FiyatTipi FiyatTipi { get; set; } = FiyatTipi.Sabit;
         public decimal Fiyat { get; set; }
+        public int? BransId { get; set; }
+        public Brans? Brans { get; set; }
 
         public ICollection<IslemSecenek> Secenekler { get; set; } = new List<IslemSecenek>();
         public ICollection<Randevu> Randevular { get; set; } = new List<Randevu>();
